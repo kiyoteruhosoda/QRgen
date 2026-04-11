@@ -91,7 +91,7 @@ class _QrScannerPageState extends State<QrScannerPage>
               MobileScanner(
                 controller: _controller,
                 onDetect: _onDetect,
-                errorBuilder: (context, error, child) {
+                errorBuilder: (context, error) {
                   return _PermissionError(
                     error: error,
                     onRetry: () => _controller.start(),

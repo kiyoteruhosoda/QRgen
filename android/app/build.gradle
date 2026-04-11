@@ -35,7 +35,7 @@ def hasKeystore = keystoreProperties.getProperty("storeFile") != null
 
 android {
     namespace = "com.nolumia.qrcorebasic"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = "26.3.11579264"
 
     compileOptions {
