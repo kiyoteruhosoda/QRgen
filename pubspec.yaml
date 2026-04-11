@@ -1,7 +1,7 @@
 name: flutterbase
-description: デジタル庁デザインシステムを使ったベースFlutterアプリ
+description: QR code scanner and generator app
 publish_to: "none"
-version: 1.1.8+60
+version: 1.2.0+61
 
 environment:
   sdk: ">=3.2.0 <4.0.0"
@@ -30,8 +30,14 @@ dependencies:
   # Package info
   package_info_plus: ^8.0.0
 
-  # URL launcher (for licenses)
+  # URL launcher (for licenses and QR results)
   url_launcher: ^6.3.0
+
+  # QR code scanning
+  mobile_scanner: ^7.0.0
+
+  # QR code generation
+  qr_flutter: ^4.1.0
 
   # Shared preferences
   shared_preferences: ^2.3.0
