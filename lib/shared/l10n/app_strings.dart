@@ -45,7 +45,7 @@ class AppStrings {
   static const String qrGeneratorCopy = 'Copy Text';
   static const String qrGeneratorDownload = 'Save Image';
   static const String qrGeneratorCopied = 'Text copied to clipboard';
-  static const String qrGeneratorSaved = 'QR code saved to Downloads';
+  static const String qrGeneratorSaved = 'QR code saved successfully';
   static const String qrGeneratorSaveError = 'Failed to save QR code';
 
   // ─── Settings tab ─────────────────────────────────────────────────────
