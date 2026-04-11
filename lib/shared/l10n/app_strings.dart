@@ -4,43 +4,49 @@ class AppStrings {
   AppStrings._();
 
   // ─── App ──────────────────────────────────────────────────────────────
-  static const String appName = 'FlutterBase';
-  static const String appDescription =
-      'Flutter base app following the DADS design system';
+  static const String appName = 'QRgen';
+  static const String appDescription = 'QR code scanner and generator app';
 
   // ─── Navigation ───────────────────────────────────────────────────────
-  static const String navHome = 'Home';
-  static const String navSearch = 'Search';
+  static const String navHome = 'Scanner';
+  static const String navSearch = 'Generator';
   static const String navSettings = 'Settings';
 
   // ─── Drawer ───────────────────────────────────────────────────────────
-  static const String drawerSubtitle = 'DADS Design System';
+  static const String drawerSubtitle = 'QR Code App';
   static const String drawerClose = 'Close';
   static const String drawerAbout = 'About';
   static const String drawerLicenses = 'Licenses';
   static const String drawerDebug = 'Debug Info';
   static const String drawerLogs = 'Logs';
 
-  // ─── Home tab ─────────────────────────────────────────────────────────
-  static const String homeWelcomeTitle = 'Welcome';
-  static const String homeWelcomeSubtitle = 'DADS Design System App';
-  static const String homeCardTitle = 'DADS Design System';
-  static const String homeCardBody =
-      'This app is built following the Digital Agency Design System (DADS). '
-      'It provides a consistent UI based on color tokens, typography, and spacing.';
-  static const String homeComponentsTitle = 'Components';
-  static const String homePrimaryButton = 'Primary Button';
-  static const String homeSecondaryButton = 'Secondary Button';
-  static const String homeTextFieldLabel = 'Text Input';
-  static const String homeTextFieldHint = 'Enter text here';
-  static const String homeListCardTitle = 'List Card';
-  static const String homeListCardSubtitle = 'Subtitle text';
-  static const String homeListCardItem2 = 'Item 2';
+  // ─── QR Scanner tab ───────────────────────────────────────────────────
+  static const String qrScannerTitle = 'QR Scanner';
+  static const String qrScannerHint = 'Point the camera at a QR code';
+  static const String qrScannerResult = 'Scan Result';
+  static const String qrScannerNoResult = 'No QR code scanned yet';
+  static const String qrScannerCopy = 'Copy';
+  static const String qrScannerOpen = 'Open';
+  static const String qrScannerCopied = 'Copied to clipboard';
+  static const String qrScannerCannotOpen = 'Cannot open this content';
+  static const String qrScannerPermissionDenied =
+      'Camera permission is required to scan QR codes';
+  static const String qrScannerPermissionRequest = 'Grant Permission';
+  static const String qrScannerTorchOn = 'Flash On';
+  static const String qrScannerTorchOff = 'Flash Off';
+  static const String qrScannerSwitchCamera = 'Switch Camera';
 
-  // ─── Search tab ───────────────────────────────────────────────────────
-  static const String searchFieldLabel = 'Search';
-  static const String searchFieldHint = 'Enter keyword';
-  static const String searchEmptyMessage = 'Enter a keyword to search';
+  // ─── QR Generator tab ─────────────────────────────────────────────────
+  static const String qrGeneratorTitle = 'QR Generator';
+  static const String qrGeneratorInputLabel = 'Text or URL';
+  static const String qrGeneratorInputHint = 'Enter text or URL to generate QR code';
+  static const String qrGeneratorButton = 'Generate';
+  static const String qrGeneratorNoCode = 'Enter text above and tap Generate';
+  static const String qrGeneratorCopy = 'Copy Text';
+  static const String qrGeneratorDownload = 'Save Image';
+  static const String qrGeneratorCopied = 'Text copied to clipboard';
+  static const String qrGeneratorSaved = 'QR code saved successfully';
+  static const String qrGeneratorSaveError = 'Failed to save QR code';
 
   // ─── Settings tab ─────────────────────────────────────────────────────
   static const String settingsTitle = 'Settings';
@@ -147,7 +153,7 @@ class AppStrings {
       'Please refer to the package license file for details.';
 
   // ─── Splash screen ───────────────────────────────────────────────────
-  static const String splashSubtitle = 'DADS Design System';
+  static const String splashSubtitle = 'QR Code Scanner & Generator';
 
   // ─── Common ──────────────────────────────────────────────────────────
   static const String commonRetry = 'Retry';
