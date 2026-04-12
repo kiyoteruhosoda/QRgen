@@ -104,11 +104,17 @@ jobs:
   build:
     needs: start-runner
     runs-on: [self-hosted, flutter, android]
+    env:
+      GRADLE_OPTS: >-
+        -Dorg.gradle.daemon=false
+        -Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxMetaspaceSize=512m -Dfile.encoding=UTF-8"
+        -Dkotlin.daemon.jvm.options=-Xmx1024m
     steps:
       - uses: actions/checkout@v5
         with:
           ref: ${{ github.event.workflow_run.head_branch || github.ref }}
-          fetch-depth: 0  # Full history needed for git rev-list --count
+          fetch-depth: 0
+
       - name: Setup Android SDK permissions
         run: |
           if [ -n "$ANDROID_SDK_ROOT" ]; then
@@ -116,10 +122,19 @@ jobs:
           elif [ -n "$ANDROID_HOME" ]; then
             sudo chmod -R a+rwx "$ANDROID_HOME" || true
           fi
+
+      - name: Flutter doctor
+        run: flutter doctor -v
+
+      - name: Flutter clean
+        run: flutter clean
+
       - name: Flutter pub get
         run: flutter pub get
+
       - name: Generate build info
         run: bash scripts/generate_build_info.sh
+
       - name: Setup release signing
         env:
           KEYSTORE_BASE64:  ${{ secrets.KEYSTORE_BASE64 }}
@@ -139,22 +154,51 @@ jobs:
           else
             echo "KEYSTORE_BASE64 not set — using debug signing (dev/test only)."
           fi
-      - name: Flutter build APK
-        run: flutter build apk --release --build-number=$(git rev-list --count HEAD)
-      - name: Flutter build AAB
-        run: flutter build appbundle --release --build-number=$(git rev-list --count HEAD)
+
+      - name: Build APK
+        run: flutter build apk --release --build-number=$(git rev-list --count HEAD) --verbose
+
+      - name: Stop Gradle daemons after APK
+        if: always()
+        run: |
+          cd android
+          ./gradlew --stop || true
+
+      - name: Build AAB
+        run: flutter build appbundle --release --build-number=$(git rev-list --count HEAD) --verbose
+
+      - name: Stop Gradle daemons after AAB
+        if: always()
+        run: |
+          cd android
+          ./gradlew --stop || true
+
       - name: Upload APK
         uses: actions/upload-artifact@v5
         with:
           name: apk
           path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
+
       - name: Upload AAB
         uses: actions/upload-artifact@v5
         with:
           name: aab
           path: build/app/outputs/bundle/release/app-release.aab
           retention-days: 30
+
+      - name: Dump Gradle logs on failure
+        if: failure()
+        run: |
+          echo "=== Gradle daemon logs ==="
+          find /home/runner/.gradle/daemon -name "*.log" -type f -print -exec tail -n 300 {} \; || true
+          echo "=== Java processes ==="
+          ps -ef | grep -i gradle || true
+          ps -ef | grep -i kotlin || true
+          echo "=== Memory ==="
+          free -h || true
+          echo "=== Disk ==="
+          df -h || true
 
   stop-runner:
     needs: build
