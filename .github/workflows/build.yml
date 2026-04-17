@@ -107,8 +107,8 @@ jobs:
     env:
       GRADLE_OPTS: >-
         -Dorg.gradle.daemon=false
-        -Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxMetaspaceSize=512m -Dfile.encoding=UTF-8"
-        -Dkotlin.daemon.jvm.options=-Xmx1024m
+        -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=1024m -Dfile.encoding=UTF-8"
+        -Dkotlin.daemon.jvm.options="-Xmx1536m -XX:MaxMetaspaceSize=512m"
     steps:
       - uses: actions/checkout@v5
         with:
