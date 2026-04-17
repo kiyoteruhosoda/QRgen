@@ -30,10 +30,9 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
     super.dispose();
   }
 
-  void _generate() {
-    final text = _textController.text.trim();
-    if (text.isEmpty) return;
-    setState(() => _qrData = text);
+  void _updateQr(String text) {
+    final trimmed = text.trim();
+    setState(() => _qrData = trimmed.isEmpty ? null : trimmed);
   }
 
   Future<void> _copyText() async {
@@ -97,22 +96,12 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
                 icon: const Icon(Icons.clear),
                 onPressed: () {
                   _textController.clear();
-                  setState(() => _qrData = null);
+                  _updateQr('');
                 },
               ),
             ),
             maxLines: 3,
-            textInputAction: TextInputAction.done,
-            onSubmitted: (_) => _generate(),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          ElevatedButton.icon(
-            onPressed: _generate,
-            icon: const Icon(Icons.qr_code),
-            label: const Text(AppStrings.qrGeneratorButton),
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size.fromHeight(AppSpacing.minTapTarget),
-            ),
+            onChanged: _updateQr,
           ),
           const SizedBox(height: AppSpacing.xl),
 

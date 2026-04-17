@@ -40,7 +40,6 @@ class AppStrings {
   static const String qrGeneratorTitle = 'QR Generator';
   static const String qrGeneratorInputLabel = 'Text or URL';
   static const String qrGeneratorInputHint = 'Enter text or URL to generate QR code';
-  static const String qrGeneratorButton = 'Generate';
   static const String qrGeneratorNoCode = 'Enter text above and tap Generate';
   static const String qrGeneratorCopy = 'Copy Text';
   static const String qrGeneratorDownload = 'Save Image';
@@ -70,14 +69,9 @@ class AppStrings {
   static const String aboutGitCommit = 'Git Commit';
   static const String aboutFlutterVersion = 'Flutter Version';
   static const String aboutDartVersion = 'Dart Version';
-  static const String aboutDesignSystem = 'Design System';
   static const String aboutDesignSystemValue = 'DADS v2.10.3';
   static const String aboutPlatform = 'Platform';
   static const String aboutPlatformValue = 'Android / iOS';
-  static const String aboutDesignSystemSectionTitle = 'Design System';
-  static const String aboutDesignSystemBody =
-      'This app is built following the Design System\nprovided by the Digital Agency of Japan (DADS).';
-  static const String aboutDesignSystemLink = 'Official Design System Website';
 
   // ─── Debug page ───────────────────────────────────────────────────────
   static const String debugTitle = 'Debug Info';
