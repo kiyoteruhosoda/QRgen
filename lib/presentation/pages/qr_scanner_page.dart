@@ -62,16 +62,26 @@ class _QrScannerPageState extends State<QrScannerPage>
 
   Future<void> _openContent() async {
     if (_scannedValue == null) return;
-    final uri = Uri.tryParse(_scannedValue!);
-    if (uri != null && await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppStrings.qrScannerCannotOpen)),
-      );
+    final raw = _scannedValue!.trim();
+    var uri = Uri.tryParse(raw);
+    // Scanned text like "example.com" has no scheme — assume https.
+    if (uri != null && !uri.hasScheme && _looksLikeUrl(raw)) {
+      uri = Uri.tryParse('https://$raw');
     }
+    if (uri != null && uri.hasScheme && await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      return;
+    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text(AppStrings.qrScannerCannotOpen)),
+    );
   }
+
+  static final RegExp _urlLikeRegExp =
+      RegExp(r'^[\w-]+(\.[\w-]+)+(/\S*)?$');
+
+  static bool _looksLikeUrl(String s) => _urlLikeRegExp.hasMatch(s);
 
   Future<void> _toggleTorch() async {
     await _controller.toggleTorch();
