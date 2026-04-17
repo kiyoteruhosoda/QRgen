@@ -20,9 +20,19 @@ class QrGeneratorPage extends StatefulWidget {
 }
 
 class _QrGeneratorPageState extends State<QrGeneratorPage> {
+  static const List<int> _ecLevels = [
+    QrErrorCorrectLevel.L,
+    QrErrorCorrectLevel.M,
+    QrErrorCorrectLevel.Q,
+    QrErrorCorrectLevel.H,
+  ];
+  static const List<String> _ecLabels = ['L', 'M', 'Q', 'H'];
+  static const int _defaultEcIndex = 1; // M
+
   final TextEditingController _textController = TextEditingController();
   final GlobalKey _qrKey = GlobalKey();
   String? _qrData;
+  int _ecIndex = _defaultEcIndex;
 
   @override
   void dispose() {
@@ -103,7 +113,33 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
             maxLines: 3,
             onChanged: _updateQr,
           ),
-          const SizedBox(height: AppSpacing.xl),
+          const SizedBox(height: AppSpacing.lg),
+
+          // ── Error correction level ─────────────────────────────────
+          Row(
+            children: [
+              Text(
+                AppStrings.qrGeneratorErrorCorrection,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                _ecLabels[_ecIndex],
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+            ],
+          ),
+          Slider(
+            value: _ecIndex.toDouble(),
+            min: 0,
+            max: (_ecLevels.length - 1).toDouble(),
+            divisions: _ecLevels.length - 1,
+            label: _ecLabels[_ecIndex],
+            onChanged: (v) => setState(() => _ecIndex = v.round()),
+          ),
+          const SizedBox(height: AppSpacing.md),
 
           // ── QR Code display ────────────────────────────────────────
           if (_qrData != null) ...[
@@ -118,6 +154,7 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
                     version: QrVersions.auto,
                     size: 240,
                     backgroundColor: Colors.white,
+                    errorCorrectionLevel: _ecLevels[_ecIndex],
                   ),
                 ),
               ),
