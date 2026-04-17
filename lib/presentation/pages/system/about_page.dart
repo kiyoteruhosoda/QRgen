@@ -98,36 +98,8 @@ class _AboutPageState extends State<AboutPage> {
               _InfoRow(label: AppStrings.aboutDartVersion, value: info.dartVersion),
               const Divider(height: AppSpacing.xl),
               _InfoRow(
-                label: AppStrings.aboutDesignSystem,
-                value: AppStrings.aboutDesignSystemValue,
-              ),
-              const Divider(height: AppSpacing.xl),
-              _InfoRow(
                 label: AppStrings.aboutPlatform,
                 value: AppStrings.aboutPlatformValue,
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        AppCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                AppStrings.aboutDesignSystemSectionTitle,
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                AppStrings.aboutDesignSystemBody,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              TextButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.open_in_new, size: AppSpacing.iconSm),
-                label: const Text(AppStrings.aboutDesignSystemLink),
               ),
             ],
           ),
