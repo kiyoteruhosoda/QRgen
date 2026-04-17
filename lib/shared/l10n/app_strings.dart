@@ -40,12 +40,13 @@ class AppStrings {
   static const String qrGeneratorTitle = 'QR Generator';
   static const String qrGeneratorInputLabel = 'Text or URL';
   static const String qrGeneratorInputHint = 'Enter text or URL to generate QR code';
-  static const String qrGeneratorNoCode = 'Enter text above and tap Generate';
+  static const String qrGeneratorNoCode = 'Enter text above to generate a QR code';
   static const String qrGeneratorCopy = 'Copy Text';
   static const String qrGeneratorDownload = 'Save Image';
   static const String qrGeneratorCopied = 'Text copied to clipboard';
   static const String qrGeneratorSaved = 'QR code saved successfully';
   static const String qrGeneratorSaveError = 'Failed to save QR code';
+  static const String qrGeneratorErrorCorrection = 'Error correction';
 
   // ─── Settings tab ─────────────────────────────────────────────────────
   static const String settingsTitle = 'Settings';
@@ -140,11 +141,6 @@ class AppStrings {
   static const String logLevelInfo = 'Info';
   static const String logLevelWarning = 'Warning';
   static const String logLevelError = 'Error';
-
-  // ─── Licenses page ───────────────────────────────────────────────────
-  static const String licensesTitle = 'Licenses';
-  static const String licensesDetails =
-      'Please refer to the package license file for details.';
 
   // ─── Splash screen ───────────────────────────────────────────────────
   static const String splashSubtitle = 'QR Code Scanner & Generator';
