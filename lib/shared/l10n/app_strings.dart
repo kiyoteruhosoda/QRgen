@@ -40,13 +40,13 @@ class AppStrings {
   static const String qrGeneratorTitle = 'QR Generator';
   static const String qrGeneratorInputLabel = 'Text or URL';
   static const String qrGeneratorInputHint = 'Enter text or URL to generate QR code';
-  static const String qrGeneratorButton = 'Generate';
-  static const String qrGeneratorNoCode = 'Enter text above and tap Generate';
+  static const String qrGeneratorNoCode = 'Enter text above to generate a QR code';
   static const String qrGeneratorCopy = 'Copy Text';
   static const String qrGeneratorDownload = 'Save Image';
   static const String qrGeneratorCopied = 'Text copied to clipboard';
   static const String qrGeneratorSaved = 'QR code saved successfully';
   static const String qrGeneratorSaveError = 'Failed to save QR code';
+  static const String qrGeneratorErrorCorrection = 'Error correction';
 
   // ─── Settings tab ─────────────────────────────────────────────────────
   static const String settingsTitle = 'Settings';
@@ -70,14 +70,9 @@ class AppStrings {
   static const String aboutGitCommit = 'Git Commit';
   static const String aboutFlutterVersion = 'Flutter Version';
   static const String aboutDartVersion = 'Dart Version';
-  static const String aboutDesignSystem = 'Design System';
   static const String aboutDesignSystemValue = 'DADS v2.10.3';
   static const String aboutPlatform = 'Platform';
   static const String aboutPlatformValue = 'Android / iOS';
-  static const String aboutDesignSystemSectionTitle = 'Design System';
-  static const String aboutDesignSystemBody =
-      'This app is built following the Design System\nprovided by the Digital Agency of Japan (DADS).';
-  static const String aboutDesignSystemLink = 'Official Design System Website';
 
   // ─── Debug page ───────────────────────────────────────────────────────
   static const String debugTitle = 'Debug Info';
@@ -146,11 +141,6 @@ class AppStrings {
   static const String logLevelInfo = 'Info';
   static const String logLevelWarning = 'Warning';
   static const String logLevelError = 'Error';
-
-  // ─── Licenses page ───────────────────────────────────────────────────
-  static const String licensesTitle = 'Licenses';
-  static const String licensesDetails =
-      'Please refer to the package license file for details.';
 
   // ─── Splash screen ───────────────────────────────────────────────────
   static const String splashSubtitle = 'QR Code Scanner & Generator';

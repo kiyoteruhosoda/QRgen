@@ -20,9 +20,19 @@ class QrGeneratorPage extends StatefulWidget {
 }
 
 class _QrGeneratorPageState extends State<QrGeneratorPage> {
+  static const List<int> _ecLevels = [
+    QrErrorCorrectLevel.L,
+    QrErrorCorrectLevel.M,
+    QrErrorCorrectLevel.Q,
+    QrErrorCorrectLevel.H,
+  ];
+  static const List<String> _ecLabels = ['L', 'M', 'Q', 'H'];
+  static const int _defaultEcIndex = 1; // M
+
   final TextEditingController _textController = TextEditingController();
   final GlobalKey _qrKey = GlobalKey();
   String? _qrData;
+  int _ecIndex = _defaultEcIndex;
 
   @override
   void dispose() {
@@ -30,10 +40,9 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
     super.dispose();
   }
 
-  void _generate() {
-    final text = _textController.text.trim();
-    if (text.isEmpty) return;
-    setState(() => _qrData = text);
+  void _updateQr(String text) {
+    final trimmed = text.trim();
+    setState(() => _qrData = trimmed.isEmpty ? null : trimmed);
   }
 
   Future<void> _copyText() async {
@@ -97,24 +106,40 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
                 icon: const Icon(Icons.clear),
                 onPressed: () {
                   _textController.clear();
-                  setState(() => _qrData = null);
+                  _updateQr('');
                 },
               ),
             ),
             maxLines: 3,
-            textInputAction: TextInputAction.done,
-            onSubmitted: (_) => _generate(),
+            onChanged: _updateQr,
+          ),
+          const SizedBox(height: AppSpacing.lg),
+
+          // ── Error correction level ─────────────────────────────────
+          Row(
+            children: [
+              Text(
+                AppStrings.qrGeneratorErrorCorrection,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                _ecLabels[_ecIndex],
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+            ],
+          ),
+          Slider(
+            value: _ecIndex.toDouble(),
+            min: 0,
+            max: (_ecLevels.length - 1).toDouble(),
+            divisions: _ecLevels.length - 1,
+            label: _ecLabels[_ecIndex],
+            onChanged: (v) => setState(() => _ecIndex = v.round()),
           ),
           const SizedBox(height: AppSpacing.md),
-          ElevatedButton.icon(
-            onPressed: _generate,
-            icon: const Icon(Icons.qr_code),
-            label: const Text(AppStrings.qrGeneratorButton),
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size.fromHeight(AppSpacing.minTapTarget),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xl),
 
           // ── QR Code display ────────────────────────────────────────
           if (_qrData != null) ...[
@@ -129,6 +154,7 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
                     version: QrVersions.auto,
                     size: 240,
                     backgroundColor: Colors.white,
+                    errorCorrectionLevel: _ecLevels[_ecIndex],
                   ),
                 ),
               ),
