@@ -33,9 +33,32 @@ if (keystorePropertiesFile.exists()) {
 }
 def hasKeystore = keystoreProperties.getProperty("storeFile") != null
 
-def isGitHubPullRequest = System.getenv("GITHUB_EVENT_NAME") == "pull_request"
-def isAzurePullRequest = System.getenv("BUILD_REASON") == "PullRequest"
-def allowUnsafeFallbackSigning = isGitHubPullRequest || isAzurePullRequest
+def env = { key -> System.getenv(key) }
+def isTruthy = { value -> value != null && !value.trim().isEmpty() }
+
+def pullRequestDetectors = [
+    github : {
+        def eventName = env("GITHUB_EVENT_NAME")
+        def ref = env("GITHUB_REF")
+        def githubRefLooksLikePullRequest = isTruthy(ref) && ref ==~ /^refs\/pull\/\d+\/(merge|head)$/
+
+        eventName in ["pull_request", "pull_request_target"] ||
+            isTruthy(env("GITHUB_BASE_REF")) ||
+            isTruthy(env("GITHUB_HEAD_REF")) ||
+            githubRefLooksLikePullRequest
+    },
+    azure  : {
+        env("BUILD_REASON") == "PullRequest" || isTruthy(env("SYSTEM_PULLREQUEST_PULLREQUESTID"))
+    },
+    gitlab : {
+        env("CI_PIPELINE_SOURCE") == "merge_request_event"
+    },
+    bitbucket: {
+        isTruthy(env("BITBUCKET_PR_ID"))
+    },
+]
+
+def allowUnsafeFallbackSigning = pullRequestDetectors.values().any { detector -> detector() }
 
 gradle.taskGraph.whenReady { taskGraph ->
     def buildsReleaseArtifacts = taskGraph.allTasks.any { task ->
