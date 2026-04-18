@@ -33,6 +33,16 @@ if (keystorePropertiesFile.exists()) {
 }
 def hasKeystore = keystoreProperties.getProperty("storeFile") != null
 
+def isReleaseTask = gradle.startParameter.taskNames.any { taskName ->
+    taskName.toLowerCase().contains("release")
+}
+
+if (isReleaseTask && !hasKeystore) {
+    throw new GradleException(
+        "Release build requires android/key.properties. Falling back to debug signing breaks update compatibility."
+    )
+}
+
 android {
     namespace = "com.nolumia.qrcorebasic"
     compileSdk = 36
@@ -48,11 +58,11 @@ android {
     }
 
     signingConfigs {
-        if (hasKeystore) {
-            release {
-                keyAlias     keystoreProperties["keyAlias"]
-                keyPassword  keystoreProperties["keyPassword"]
-                storeFile    file(keystoreProperties["storeFile"])
+        release {
+            if (hasKeystore) {
+                keyAlias      keystoreProperties["keyAlias"]
+                keyPassword   keystoreProperties["keyPassword"]
+                storeFile     file(keystoreProperties["storeFile"])
                 storePassword keystoreProperties["storePassword"]
             }
         }
@@ -68,7 +78,7 @@ android {
 
     buildTypes {
         release {
-            signingConfig = hasKeystore ? signingConfigs.release : signingConfigs.debug
+            signingConfig = signingConfigs.release
         }
     }
 }
