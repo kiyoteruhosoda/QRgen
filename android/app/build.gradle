@@ -33,14 +33,21 @@ if (keystorePropertiesFile.exists()) {
 }
 def hasKeystore = keystoreProperties.getProperty("storeFile") != null
 
-def isReleaseTask = gradle.startParameter.taskNames.any { taskName ->
-    taskName.toLowerCase().contains("release")
-}
+def isGitHubPullRequest = System.getenv("GITHUB_EVENT_NAME") == "pull_request"
+def isAzurePullRequest = System.getenv("BUILD_REASON") == "PullRequest"
+def allowUnsafeFallbackSigning = isGitHubPullRequest || isAzurePullRequest
 
-if (isReleaseTask && !hasKeystore) {
-    throw new GradleException(
-        "Release build requires android/key.properties. Falling back to debug signing breaks update compatibility."
-    )
+gradle.taskGraph.whenReady { taskGraph ->
+    def buildsReleaseArtifacts = taskGraph.allTasks.any { task ->
+        task.path.toLowerCase().contains(":release") ||
+            task.path.toLowerCase().contains("release")
+    }
+
+    if (buildsReleaseArtifacts && !hasKeystore && !allowUnsafeFallbackSigning) {
+        throw new GradleException(
+            "Release build requires android/key.properties. For PR validation only, CI pull_request builds may use debug signing."
+        )
+    }
 }
 
 android {
@@ -78,7 +85,7 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.release
+            signingConfig = (hasKeystore || !allowUnsafeFallbackSigning) ? signingConfigs.release : signingConfigs.debug
         }
     }
 }
