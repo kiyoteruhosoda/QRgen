@@ -39,7 +39,13 @@ def isTruthy = { value -> value != null && !value.trim().isEmpty() }
 def pullRequestDetectors = [
     github : {
         def eventName = env("GITHUB_EVENT_NAME")
-        eventName in ["pull_request", "pull_request_target"] || isTruthy(env("GITHUB_BASE_REF"))
+        def ref = env("GITHUB_REF")
+        def githubRefLooksLikePullRequest = isTruthy(ref) && ref ==~ /^refs\/pull\/\d+\/(merge|head)$/
+
+        eventName in ["pull_request", "pull_request_target"] ||
+            isTruthy(env("GITHUB_BASE_REF")) ||
+            isTruthy(env("GITHUB_HEAD_REF")) ||
+            githubRefLooksLikePullRequest
     },
     azure  : {
         env("BUILD_REASON") == "PullRequest" || isTruthy(env("SYSTEM_PULLREQUEST_PULLREQUESTID"))
