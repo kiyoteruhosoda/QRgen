@@ -100,7 +100,7 @@ android {
 
     defaultConfig {
         applicationId = "com.nolumia.qrcorebasic"
-        minSdk = 23
+        minSdk = 36
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName

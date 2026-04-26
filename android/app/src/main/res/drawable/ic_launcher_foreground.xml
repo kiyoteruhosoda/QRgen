@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Adaptive icon foreground: white QR-code silhouette on transparent.
+  Canvas: 108×108dp  |  Safe zone: 18–90dp (72dp square)
+  QR grid: 15×15 modules at 4dp each, offset (24,24) → (84,84)
+    Finder TL : rows 0-6, cols 0-6  (24,24)-(52,52)
+    Finder TR : rows 0-6, cols 8-14 (56,24)-(84,52)
+    Finder BL : rows 8-14, cols 0-6 (24,56)-(52,84)
+    Timing col : col 7 (x=52-56), even rows
+    Timing row : row 7 (y=52-56), even cols
+    Data area  : rows 8-14, cols 8-14 (56,56)-(84,84)
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- ── Finder TL: outer ring with transparent gap ── -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M24,24 H52 V52 H24 Z M28,28 H48 V48 H28 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M32,32 H44 V44 H32 Z"/>
+
+    <!-- ── Finder TR: outer ring with transparent gap ── -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M56,24 H84 V52 H56 Z M60,28 H80 V48 H60 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M64,32 H76 V44 H64 Z"/>
+
+    <!-- ── Finder BL: outer ring with transparent gap ── -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M24,56 H52 V84 H24 Z M28,60 H48 V80 H28 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M32,64 H44 V76 H32 Z"/>
+
+    <!-- ── Timing column (col 7, x=52-56, even rows 0-14) ── -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="
+            M52,24 H56 V28 H52 Z
+            M52,32 H56 V36 H52 Z
+            M52,40 H56 V44 H52 Z
+            M52,48 H56 V52 H52 Z
+            M52,56 H56 V60 H52 Z
+            M52,64 H56 V68 H52 Z
+            M52,72 H56 V76 H52 Z
+            M52,80 H56 V84 H52 Z"/>
+
+    <!-- ── Timing row (row 7, y=52-56, even cols 0-14) ── -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="
+            M24,52 H28 V56 H24 Z
+            M32,52 H36 V56 H32 Z
+            M40,52 H44 V56 H40 Z
+            M48,52 H52 V56 H48 Z
+            M56,52 H60 V56 H56 Z
+            M64,52 H68 V56 H64 Z
+            M72,52 H76 V56 H72 Z
+            M80,52 H84 V56 H80 Z"/>
+
+    <!-- ── Data area (rows 8-14, cols 8-14) ── -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="
+            M60,56 H64 V60 H60 Z
+            M68,56 H72 V60 H68 Z
+            M72,56 H76 V60 H72 Z
+            M80,56 H84 V60 H80 Z
+
+            M56,60 H60 V64 H56 Z
+            M68,60 H72 V64 H68 Z
+            M76,60 H80 V64 H76 Z
+
+            M60,64 H64 V68 H60 Z
+            M64,64 H68 V68 H64 Z
+            M72,64 H76 V68 H72 Z
+            M80,64 H84 V68 H80 Z
+
+            M56,68 H60 V72 H56 Z
+            M60,68 H64 V72 H60 Z
+            M68,68 H72 V72 H68 Z
+            M80,68 H84 V72 H80 Z
+
+            M64,72 H68 V76 H64 Z
+            M72,72 H76 V76 H72 Z
+            M76,72 H80 V76 H76 Z
+
+            M56,76 H60 V80 H56 Z
+            M64,76 H68 V80 H64 Z
+            M68,76 H72 V80 H68 Z
+            M76,76 H80 V80 H76 Z
+
+            M60,80 H64 V84 H60 Z
+            M72,80 H76 V84 H72 Z
+            M80,80 H84 V84 H80 Z"/>
+</vector>
