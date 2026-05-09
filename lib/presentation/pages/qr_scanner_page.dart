@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutterbase/app/di/service_locator.dart';
+import 'package:flutterbase/application/usecases/scanner/read_scanned_code_from_image_usecase.dart';
+import 'package:flutterbase/infrastructure/scanner/mobile_scanner_image_reader.dart';
+import 'package:flutterbase/presentation/viewmodels/scanned_code_history_viewmodel.dart';
 import 'package:flutterbase/shared/l10n/app_strings.dart';
 import 'package:flutterbase/shared/theme/theme.dart';
 
@@ -18,11 +23,18 @@ class _QrScannerPageState extends State<QrScannerPage>
   final MobileScannerController _controller = MobileScannerController();
   String? _scannedValue;
   bool _torchOn = false;
+  final ScannedCodeHistoryViewModel _historyViewModel =
+      sl<ScannedCodeHistoryViewModel>();
+  late final ReadScannedCodeFromImageUseCase _readFromImageUseCase;
+  final ImagePicker _imagePicker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _historyViewModel.load();
+    _readFromImageUseCase =
+        ReadScannedCodeFromImageUseCase(MobileScannerImageReader(_controller));
   }
 
   @override
@@ -49,6 +61,7 @@ class _QrScannerPageState extends State<QrScannerPage>
     final value = barcode.rawValue;
     if (value == null || value == _scannedValue) return;
     setState(() => _scannedValue = value);
+    _historyViewModel.add(value);
   }
 
   Future<void> _copyToClipboard() async {
@@ -71,6 +84,23 @@ class _QrScannerPageState extends State<QrScannerPage>
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text(AppStrings.qrScannerCannotOpen)),
     );
+  }
+
+
+  Future<void> _scanFromImage() async {
+    final image = await _imagePicker.pickImage(source: ImageSource.gallery);
+    if (image == null) return;
+    final value = await _readFromImageUseCase.execute(image.path);
+    if (value == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppStrings.qrScannerImageNotFound)),
+      );
+      return;
+    }
+
+    setState(() => _scannedValue = value);
+    await _historyViewModel.add(value);
   }
 
   Future<void> _toggleTorch() async {
@@ -126,6 +156,12 @@ class _QrScannerPageState extends State<QrScannerPage>
                           ? AppStrings.qrScannerTorchOff
                           : AppStrings.qrScannerTorchOn,
                       onPressed: _toggleTorch,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    _IconCircleButton(
+                      icon: Icons.image_search_outlined,
+                      tooltip: AppStrings.qrScannerReadFromImage,
+                      onPressed: _scanFromImage,
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     _IconCircleButton(
@@ -196,6 +232,61 @@ class _QrScannerPageState extends State<QrScannerPage>
                 ),
               ],
             ),
+          ),
+
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.pageMargin,
+            0,
+            AppSpacing.pageMargin,
+            AppSpacing.pageMargin,
+          ),
+          child: ListenableBuilder(
+            listenable: _historyViewModel,
+            builder: (context, _) {
+              final history = _historyViewModel.items;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    AppStrings.qrScannerHistory,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  SizedBox(
+                    height: 120,
+                    child: history.isEmpty
+                        ? Center(
+                            child: Text(
+                              AppStrings.qrScannerNoHistory,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          )
+                        : ListView.separated(
+                            itemCount: history.length,
+                            separatorBuilder: (_, __) => const Divider(height: 1),
+                            itemBuilder: (context, index) {
+                              final item = history[index];
+                              return ListTile(
+                                dense: true,
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(
+                                  item.value,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                subtitle: Text(
+                                  item.scannedAt.toLocal().toIso8601String().replaceFirst('T', ' ').split('.').first,
+                                ),
+                                onTap: () => setState(() => _scannedValue = item.value),
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ],

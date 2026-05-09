@@ -35,6 +35,10 @@ class AppStrings {
   static const String qrScannerTorchOn = 'Flash On';
   static const String qrScannerTorchOff = 'Flash Off';
   static const String qrScannerSwitchCamera = 'Switch Camera';
+  static const String qrScannerHistory = 'History';
+  static const String qrScannerNoHistory = 'No scan history yet';
+  static const String qrScannerReadFromImage = 'Read from Image';
+  static const String qrScannerImageNotFound = 'No QR code found in image';
 
   // ─── QR Generator tab ─────────────────────────────────────────────────
   static const String qrGeneratorTitle = 'QR Generator';
