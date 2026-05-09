@@ -231,11 +231,12 @@ class _QrScannerPageState extends State<QrScannerPage>
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
+	              ],
+	            ),
+	          ),
+	        ),
 
-        Container(
+	        Container(
           width: double.infinity,
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.pageMargin,
