@@ -173,7 +173,7 @@ jobs:
       - name: Build APK
         run: |
           cd android
-          gradle app:assembleRelease \
+          ./gradlew app:assembleRelease \
             --stacktrace \
             --info \
             --warning-mode=all \
@@ -183,12 +183,12 @@ jobs:
         if: always()
         run: |
           cd android
-          gradle --stop || true
+          ./gradlew --stop || true
 
       - name: Build AAB
         run: |
           cd android
-          gradle app:bundleRelease \
+          ./gradlew app:bundleRelease \
             --stacktrace \
             --info \
             --warning-mode=all \
@@ -198,7 +198,7 @@ jobs:
         if: always()
         run: |
           cd android
-          gradle --stop || true
+          ./gradlew --stop || true
 
       - name: Upload APK
         uses: actions/upload-artifact@v5
