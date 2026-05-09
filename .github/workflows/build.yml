@@ -136,6 +136,20 @@ jobs:
       - name: Generate build info
         run: bash scripts/generate_build_info.sh
 
+      - name: Validate signing inputs for release build
+        env:
+          KEYSTORE_BASE64:  ${{ secrets.KEYSTORE_BASE64 }}
+          KEY_ALIAS:        ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD:     ${{ secrets.KEY_PASSWORD }}
+          STORE_PASSWORD:   ${{ secrets.STORE_PASSWORD }}
+        run: |
+          IS_PR=false
+          [ "${GITHUB_EVENT_NAME:-}" = "pull_request" ] && IS_PR=true
+          [ "${GITHUB_EVENT_NAME:-}" = "pull_request_target" ] && IS_PR=true
+          if [ "$IS_PR" = "false" ] && [ -z "$KEYSTORE_BASE64" ]; then
+            echo "ERROR: Non-PR release build requires KEYSTORE_BASE64/KEY_ALIAS/KEY_PASSWORD/STORE_PASSWORD secrets."
+            exit 1
+          fi
       - name: Setup release signing
         env:
           KEYSTORE_BASE64:  ${{ secrets.KEYSTORE_BASE64 }}
@@ -159,7 +173,7 @@ jobs:
       - name: Build APK
         run: |
           cd android
-          ./gradlew app:assembleRelease \
+          gradle app:assembleRelease \
             --stacktrace \
             --info \
             --warning-mode=all \
@@ -169,12 +183,12 @@ jobs:
         if: always()
         run: |
           cd android
-          ./gradlew --stop || true
+          gradle --stop || true
 
       - name: Build AAB
         run: |
           cd android
-          ./gradlew app:bundleRelease \
+          gradle app:bundleRelease \
             --stacktrace \
             --info \
             --warning-mode=all \
@@ -184,7 +198,7 @@ jobs:
         if: always()
         run: |
           cd android
-          ./gradlew --stop || true
+          gradle --stop || true
 
       - name: Upload APK
         uses: actions/upload-artifact@v5
