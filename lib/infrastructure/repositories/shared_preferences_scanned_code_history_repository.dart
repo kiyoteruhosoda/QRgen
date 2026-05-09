@@ -12,22 +12,26 @@ class SharedPreferencesScannedCodeHistoryRepository
   static const _maxItems = 50;
 
   final SharedPreferences _prefs;
+  Future<void> _pendingWrite = Future.value();
 
   @override
-  Future<void> add(ScannedCodeHistoryItem item) async {
-    final current = await getAll();
-    final next = [item, ...current.where((e) => e.value != item.value)]
-        .take(_maxItems)
-        .toList(growable: false);
-    final payload = next
-        .map(
-          (e) => jsonEncode({
-            'value': e.value,
-            'scannedAt': e.scannedAt.toIso8601String(),
-          }),
-        )
-        .toList(growable: false);
-    await _prefs.setStringList(_historyKey, payload);
+  Future<void> add(ScannedCodeHistoryItem item) {
+    _pendingWrite = _pendingWrite.then((_) async {
+      final current = await getAll();
+      final next = [item, ...current.where((e) => e.value != item.value)]
+          .take(_maxItems)
+          .toList(growable: false);
+      final payload = next
+          .map(
+            (e) => jsonEncode({
+              'value': e.value,
+              'scannedAt': e.scannedAt.toIso8601String(),
+            }),
+          )
+          .toList(growable: false);
+      await _prefs.setStringList(_historyKey, payload);
+    });
+    return _pendingWrite;
   }
 
   @override

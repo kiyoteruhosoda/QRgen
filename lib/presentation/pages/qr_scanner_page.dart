@@ -99,6 +99,7 @@ class _QrScannerPageState extends State<QrScannerPage>
       return;
     }
 
+    if (!mounted) return;
     setState(() => _scannedValue = value);
     await _historyViewModel.add(value);
   }
