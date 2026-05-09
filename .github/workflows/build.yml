@@ -172,33 +172,17 @@ jobs:
 
       - name: Build APK
         run: |
-          cd android
-          ./gradlew app:assembleRelease \
-            --stacktrace \
-            --info \
-            --warning-mode=all \
-            -Pflutter.buildNumber=$(git rev-list --count HEAD)
-
-      - name: Stop Gradle daemons after APK
-        if: always()
-        run: |
-          cd android
-          ./gradlew --stop || true
+          flutter build apk \
+            --release \
+            --build-number=$(git rev-list --count HEAD) \
+            --verbose
 
       - name: Build AAB
         run: |
-          cd android
-          ./gradlew app:bundleRelease \
-            --stacktrace \
-            --info \
-            --warning-mode=all \
-            -Pflutter.buildNumber=$(git rev-list --count HEAD)
-
-      - name: Stop Gradle daemons after AAB
-        if: always()
-        run: |
-          cd android
-          ./gradlew --stop || true
+          flutter build appbundle \
+            --release \
+            --build-number=$(git rev-list --count HEAD) \
+            --verbose
 
       - name: Upload APK
         uses: actions/upload-artifact@v5
