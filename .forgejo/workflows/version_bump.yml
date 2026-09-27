@@ -24,18 +24,17 @@ permissions:
   contents: write
 
 # 実行場所は nolumialab のセルフホストランナー（2026-09-27 に GitHub から forge へ移した）。
-#
-# ⚠ リリースはここから起こさない。QRgen は deck の配布の段（deploy-repo の
-#   resources/flutter-apps.json の qrgen）で焼き、いまは deck の画面 /apps から押す。
 jobs:
   bump-version:
-    runs-on: [self-hosted, nolumialab]
-    # ⚠ **ジョブのイメージに node が要る。** `uses:` の JS アクションは
-    #   ジョブのコンテナの中の node を呼ぶ ——素の python イメージだと
-    #   `exec: "node": executable file not found` で checkout から落ちる。
-    #   この関門は git と bash しか使わないので、軽いほうの台でよい。
+    # ⚠ **docker を使う台へ回す。** リリースの起動（`scripts/trigger_release.sh`）が
+    #   ツールチェインをコンテナに閉じ込めて走らせるため。
+    runs-on: [self-hosted, nolumialab-docker]
+    # ⚠ **資格情報の部屋だけをジョブへ渡す。** `trigger_release.sh` が
+    #   `client.json` を読めるかを自分で確かめる。台の `valid_volumes` で
+    #   `/srv/secrets/ci/*` だけ許可してある（deploy-repo）。
     container:
-      image: hub.nolumia.com:5000/builder/ci-python311@sha256:c6db7656b1a48195fde17e0c25c2f9e2d01dae78f09df73a74dcb1a24da53b45
+      image: hub.nolumia.com:5000/builder/ci-docker@sha256:b3054e67eb6f283e46039bd53469df8f505f8756e06453918bdf448a47d307c2
+      options: -v /srv/secrets/ci/qrgen:/srv/secrets/ci/qrgen:ro
     # ⚠ 既定は 6 時間。ぶら下がったジョブが台を食い潰すので上限を置く。
     timeout-minutes: 20
     steps:
@@ -75,3 +74,16 @@ jobs:
             git tag "$VERSION"
             git push origin main --tags
           fi
+
+      # リリースの起動はここ **だけ**（photonestapp と同じ。あちらの ADR-0031）。
+      # deck の配布の段（deploy-repo の resources/flutter-apps.json の qrgen）が
+      # 焼いて署名し、share.nolumia.com へ置く。端末へ入れるのは人。
+      #
+      # ⚠ 条件を付けない。版が動かなかったときでもマージ commit は焼きに行き、
+      #   行った先で版ガードが判断する。
+      # ⚠ 起動に失敗したらこのジョブを赤くする。ここが静かに転ぶと
+      #   「マージしたのに配られない」に気付くのが遅れる。
+      - name: deck へリリースを積む
+        env:
+          DECK_APP: qrgen
+        run: bash scripts/trigger_release.sh
