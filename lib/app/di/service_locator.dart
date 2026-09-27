@@ -5,23 +5,26 @@ import 'package:flutterbase/application/usecases/app_info/get_app_info_usecase.d
 import 'package:flutterbase/application/usecases/debug/get_debug_settings_usecase.dart';
 import 'package:flutterbase/application/usecases/debug/set_debug_mode_usecase.dart';
 import 'package:flutterbase/application/usecases/debug/set_log_level_usecase.dart';
-import 'package:flutterbase/application/usecases/scanner/add_scanned_code_to_history_usecase.dart';
-import 'package:flutterbase/application/usecases/scanner/get_scanned_code_history_usecase.dart';
+import 'package:flutterbase/application/usecases/history/clear_code_history_usecase.dart';
+import 'package:flutterbase/application/usecases/history/delete_code_history_item_usecase.dart';
+import 'package:flutterbase/application/usecases/history/get_code_history_usecase.dart';
+import 'package:flutterbase/application/usecases/history/record_code_use_usecase.dart';
 import 'package:flutterbase/application/usecases/theme/get_theme_preference_usecase.dart';
 import 'package:flutterbase/application/usecases/theme/set_theme_preference_usecase.dart';
 import 'package:flutterbase/domain/repositories/app_info_repository.dart';
+import 'package:flutterbase/domain/value_objects/code_history_kind.dart';
 import 'package:flutterbase/domain/repositories/debug_settings_repository.dart';
-import 'package:flutterbase/domain/repositories/scanned_code_history_repository.dart';
+import 'package:flutterbase/domain/repositories/code_history_repository.dart';
 import 'package:flutterbase/domain/repositories/theme_preference_repository.dart';
 import 'package:flutterbase/infrastructure/logging/persistent_app_logger.dart';
 import 'package:flutterbase/infrastructure/repositories/package_info_app_info_repository.dart';
 import 'package:flutterbase/infrastructure/repositories/shared_preferences_debug_settings_repository.dart';
-import 'package:flutterbase/infrastructure/repositories/shared_preferences_scanned_code_history_repository.dart';
+import 'package:flutterbase/infrastructure/repositories/shared_preferences_code_history_repository.dart';
 import 'package:flutterbase/infrastructure/repositories/shared_preferences_theme_preference_repository.dart';
 import 'package:flutterbase/presentation/viewmodels/about_viewmodel.dart';
 import 'package:flutterbase/presentation/viewmodels/debug_settings_viewmodel.dart';
 import 'package:flutterbase/presentation/viewmodels/debug_viewmodel.dart';
-import 'package:flutterbase/presentation/viewmodels/scanned_code_history_viewmodel.dart';
+import 'package:flutterbase/presentation/viewmodels/code_history_viewmodel.dart';
 import 'package:flutterbase/presentation/viewmodels/theme_viewmodel.dart';
 import 'package:flutterbase/shared/logging/app_logger.dart';
 
@@ -57,9 +60,21 @@ Future<void> setupServiceLocator() async {
     const PackageInfoAppInfoRepository(),
   );
 
-  sl.registerSingleton<ScannedCodeHistoryRepository>(
-    SharedPreferencesScannedCodeHistoryRepository(prefs),
-  );
+  // One history per tab, told apart by instance name.
+  for (final kind in CodeHistoryKind.values) {
+    sl.registerSingleton<CodeHistoryRepository>(
+      SharedPreferencesCodeHistoryRepository(
+        prefs,
+        storageKey: switch (kind) {
+          CodeHistoryKind.scanned =>
+            SharedPreferencesCodeHistoryRepository.scannedStorageKey,
+          CodeHistoryKind.generated =>
+            SharedPreferencesCodeHistoryRepository.generatedStorageKey,
+        },
+      ),
+      instanceName: kind.name,
+    );
+  }
 
   // ─── Use cases ───────────────────────────────────────────────────────
 
@@ -71,12 +86,6 @@ Future<void> setupServiceLocator() async {
   );
   sl.registerFactory<GetAppInfoUseCase>(
     () => GetAppInfoUseCase(sl<AppInfoRepository>()),
-  );
-  sl.registerFactory<GetScannedCodeHistoryUseCase>(
-    () => GetScannedCodeHistoryUseCase(sl<ScannedCodeHistoryRepository>()),
-  );
-  sl.registerFactory<AddScannedCodeToHistoryUseCase>(
-    () => AddScannedCodeToHistoryUseCase(sl<ScannedCodeHistoryRepository>()),
   );
   sl.registerFactory<GetDebugSettingsUseCase>(
     () => GetDebugSettingsUseCase(sl<DebugSettingsRepository>()),
@@ -109,12 +118,18 @@ Future<void> setupServiceLocator() async {
   sl.registerFactory<DebugViewModel>(
     () => DebugViewModel(sl<GetAppInfoUseCase>(), sl<AppLogger>()),
   );
-  sl.registerSingleton<ScannedCodeHistoryViewModel>(
-    ScannedCodeHistoryViewModel(
-      sl<GetScannedCodeHistoryUseCase>(),
-      sl<AddScannedCodeToHistoryUseCase>(),
-    ),
-  );
+  for (final kind in CodeHistoryKind.values) {
+    final repository = sl<CodeHistoryRepository>(instanceName: kind.name);
+    sl.registerSingleton<CodeHistoryViewModel>(
+      CodeHistoryViewModel(
+        getHistory: GetCodeHistoryUseCase(repository),
+        recordUse: RecordCodeUseUseCase(repository),
+        deleteItem: DeleteCodeHistoryItemUseCase(repository),
+        clearHistory: ClearCodeHistoryUseCase(repository),
+      ),
+      instanceName: kind.name,
+    );
+  }
 
   // ─── Infrastructure (DB, Repositories) ──────────────────────────────
   // TODO: add when features are implemented

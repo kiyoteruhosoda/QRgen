@@ -8,6 +8,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'dart:io';
 
+import 'package:flutterbase/app/di/service_locator.dart';
+import 'package:flutterbase/domain/value_objects/code_history_kind.dart';
+import 'package:flutterbase/presentation/viewmodels/code_history_viewmodel.dart';
+import 'package:flutterbase/presentation/widgets/code_history_section.dart';
 import 'package:flutterbase/shared/l10n/app_strings.dart';
 import 'package:flutterbase/shared/theme/theme.dart';
 
@@ -30,14 +34,44 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
   static const int _defaultEcIndex = 1; // M
 
   final TextEditingController _textController = TextEditingController();
+  final FocusNode _inputFocus = FocusNode();
   final GlobalKey _qrKey = GlobalKey();
+  final CodeHistoryViewModel _historyViewModel =
+      sl<CodeHistoryViewModel>(instanceName: CodeHistoryKind.generated.name);
   String? _qrData;
   int _ecIndex = _defaultEcIndex;
 
   @override
+  void initState() {
+    super.initState();
+    _historyViewModel.load();
+    _inputFocus.addListener(_onInputFocusChanged);
+  }
+
+  @override
   void dispose() {
+    _inputFocus
+      ..removeListener(_onInputFocusChanged)
+      ..dispose();
     _textController.dispose();
     super.dispose();
+  }
+
+  /// Typing produces a code per keystroke, so the history only takes the
+  /// text once the user is done editing (the field loses focus), or when the
+  /// code is copied or saved.
+  void _onInputFocusChanged() {
+    if (!_inputFocus.hasFocus) _recordCurrent();
+  }
+
+  void _recordCurrent() {
+    if (_qrData != null) _historyViewModel.recordUse(_qrData!);
+  }
+
+  void _selectFromHistory(String value) {
+    _textController.text = value;
+    _inputFocus.unfocus();
+    _updateQr(value);
   }
 
   void _updateQr(String text) {
@@ -48,6 +82,7 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
   Future<void> _copyText() async {
     if (_qrData == null) return;
     await Clipboard.setData(ClipboardData(text: _qrData!));
+    _recordCurrent();
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text(AppStrings.qrGeneratorCopied)),
@@ -67,6 +102,7 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
       final bytes = byteData.buffer.asUint8List();
 
       await _writePng(bytes);
+      _recordCurrent();
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -98,6 +134,8 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
           // ── Input ──────────────────────────────────────────────────
           TextField(
             controller: _textController,
+            focusNode: _inputFocus,
+            onTapOutside: (_) => _inputFocus.unfocus(),
             decoration: InputDecoration(
               labelText: AppStrings.qrGeneratorInputLabel,
               hintText: AppStrings.qrGeneratorInputHint,
@@ -192,15 +230,15 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
           ] else ...[
             Center(
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: AppSpacing.xxxl),
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxxl),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       Icons.qr_code_2_outlined,
                       size: 80,
-                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                      color:
+                          colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                     ),
                     const SizedBox(height: AppSpacing.md),
                     Text(
@@ -214,6 +252,14 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
               ),
             ),
           ],
+          const SizedBox(height: AppSpacing.lg),
+
+          // ── History ────────────────────────────────────────────────
+          CodeHistorySection(
+            viewModel: _historyViewModel,
+            emptyText: AppStrings.qrGeneratorNoHistory,
+            onSelect: _selectFromHistory,
+          ),
         ],
       ),
     );

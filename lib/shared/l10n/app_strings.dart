@@ -35,7 +35,6 @@ class AppStrings {
   static const String qrScannerTorchOn = 'Flash On';
   static const String qrScannerTorchOff = 'Flash Off';
   static const String qrScannerSwitchCamera = 'Switch Camera';
-  static const String qrScannerHistory = 'History';
   static const String qrScannerNoHistory = 'No scan history yet';
   static const String qrScannerReadFromImage = 'Read from Image';
   static const String qrScannerImageNotFound = 'No QR code found in image';
@@ -43,14 +42,28 @@ class AppStrings {
   // ─── QR Generator tab ─────────────────────────────────────────────────
   static const String qrGeneratorTitle = 'QR Generator';
   static const String qrGeneratorInputLabel = 'Text or URL';
-  static const String qrGeneratorInputHint = 'Enter text or URL to generate QR code';
-  static const String qrGeneratorNoCode = 'Enter text above to generate a QR code';
+  static const String qrGeneratorInputHint =
+      'Enter text or URL to generate QR code';
+  static const String qrGeneratorNoCode =
+      'Enter text above to generate a QR code';
   static const String qrGeneratorCopy = 'Copy Text';
   static const String qrGeneratorDownload = 'Save Image';
   static const String qrGeneratorCopied = 'Text copied to clipboard';
   static const String qrGeneratorSaved = 'QR code saved successfully';
   static const String qrGeneratorSaveError = 'Failed to save QR code';
   static const String qrGeneratorErrorCorrection = 'Error correction';
+  static const String qrGeneratorNoHistory = 'No generated codes yet';
+
+  // ─── History (shared by scanner and generator) ────────────────────────
+  static const String historyTitle = 'History';
+  static const String historyDelete = 'Delete';
+  static const String historyClearAll = 'Clear All';
+  static const String historyClearTitle = 'Clear History';
+  static const String historyClearMessage =
+      'Delete all entries in this history?';
+  static const String historyClearConfirm = 'Clear';
+  static const String historyCancel = 'Cancel';
+  static const String historyDeleted = 'Deleted from history';
 
   // ─── Settings tab ─────────────────────────────────────────────────────
   static const String settingsTitle = 'Settings';
