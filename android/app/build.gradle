@@ -33,6 +33,20 @@ if (keystorePropertiesFile.exists()) {
 }
 def hasKeystore = keystoreProperties.getProperty("storeFile") != null
 
+// CI 用の「署名なし」モード（雛形 flutterbase と同じ）。
+//
+// NOLUMIA_SIGNING=none を渡すと release から signingConfig を外し、Gradle は
+// 署名しない成果物を出す。署名はビルドの後段で、**アプリのコードを実行しない
+// 別コンテナ**が apksigner / jarsigner で行う。こうすると署名鍵が pub パッケージや
+// Gradle プラグインから見えなくなる。
+//
+// 手元のビルドや従来の key.properties 方式は今までどおり動く。
+// 詳細は deploy-repo の docs/flutter-signing.md を参照。
+def unsignedRelease = (System.getenv("NOLUMIA_SIGNING") == "none")
+
+// APK / AAB の名前の頭。deck の宣言（flutter-apps.json）の name と揃える。
+def appArchivesBase = (project.findProperty("app.archivesBaseName") ?: "qrgen")
+
 def env = { key -> System.getenv(key) }
 def isTruthy = { value -> value != null && !value.trim().isEmpty() }
 
@@ -66,7 +80,8 @@ gradle.taskGraph.whenReady { taskGraph ->
             task.path.toLowerCase().contains("release")
     }
 
-    if (buildsReleaseArtifacts && !hasKeystore && !allowUnsafeFallbackSigning) {
+    // 署名なしモードは鍵を持たないのが正しい形なので止めない（後段で署名する）。
+    if (buildsReleaseArtifacts && !hasKeystore && !allowUnsafeFallbackSigning && !unsignedRelease) {
         throw new GradleException(
             "Release build requires android/key.properties. For PR validation only, CI pull_request builds may use debug signing."
         )
@@ -76,15 +91,15 @@ gradle.taskGraph.whenReady { taskGraph ->
 android {
     namespace = "com.nolumia.qrcorebasic"
     compileSdk = 36
-    ndkVersion = "26.3.11579264"
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = JavaVersion.VERSION_17
     }
 
     signingConfigs {
@@ -108,7 +123,60 @@ android {
 
     buildTypes {
         release {
-            signingConfig = (hasKeystore || !allowUnsafeFallbackSigning) ? signingConfigs.release : signingConfigs.debug
+            signingConfig = unsignedRelease
+                ? null
+                : ((hasKeystore || !allowUnsafeFallbackSigning) ? signingConfigs.release : signingConfigs.debug)
+        }
+    }
+}
+
+// Per-app renamed COPIES of Gradle's default outputs（雛形 flutterbase と同じ）。
+//
+// deck の flutter-release.sh は `<name>-<version>-release.apk` / `.aab` を探して
+// 署名する（`app-release.*` は拾わない）。原本の名前は変えない ——Flutter の CLI が
+// app-<buildType>.apk / .aab を決め打ちで探し、無いと落ちるため。
+project.afterEvaluate {
+    android.applicationVariants.all { variant ->
+        def variantName = variant.name
+        def variantCap  = variantName.capitalize()
+        def perAppBase  = "${appArchivesBase}-${variant.versionName}-${variantName}"
+
+        def assembleTask = tasks.findByName("assemble${variantCap}")
+        if (assembleTask != null) {
+            assembleTask.doLast {
+                variant.outputs.each { output ->
+                    def src = output.outputFile
+                    if (src?.exists()) {
+                        new File(src.parentFile, "${perAppBase}.apk").bytes = src.bytes
+
+                        // 署名なしモードでは AGP の出力が app-<type>-unsigned.apk になる。
+                        // Flutter の CLI は app-<type>.apk を決め打ちで探すので、
+                        // 既定名のコピーも置く（中身は unsigned）。
+                        if (src.name.endsWith("-unsigned.apk")) {
+                            new File(src.parentFile, "app-${variantName}.apk").bytes = src.bytes
+                        }
+
+                        def flutterApkDir = file("${buildDir}/outputs/flutter-apk")
+                        flutterApkDir.mkdirs()
+                        def flutterDst = new File(flutterApkDir, "${perAppBase}.apk")
+                        flutterDst.bytes = src.bytes
+                        logger.lifecycle("Per-app APK: ${flutterDst}")
+                    }
+                }
+            }
+        }
+
+        def bundleTask = tasks.findByName("bundle${variantCap}")
+        if (bundleTask != null) {
+            bundleTask.doLast {
+                def bundleDir = file("${buildDir}/outputs/bundle/${variantName}")
+                def src = new File(bundleDir, "app-${variantName}.aab")
+                if (src.exists()) {
+                    def dst = new File(bundleDir, "${perAppBase}.aab")
+                    dst.bytes = src.bytes
+                    logger.lifecycle("Per-app AAB: ${dst}")
+                }
+            }
         }
     }
 }

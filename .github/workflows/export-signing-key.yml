@@ -1,0 +1,88 @@
+name: Export signing key (one-off)
+
+# 署名鍵を GitHub Secrets から nolumialab へ移すための、一度きりの workflow。
+#
+# リリースビルドは nolumialab の deck（deploy-repo の docs/flutter-signing.md）へ
+# 移した。鍵の正本は GitHub Secrets にしか無く、Secrets は読み出せないので、
+# ここで鍵と合言葉を **nolumialab の使い捨ての公開鍵で封をして** artifact に置く。
+# 封を開ける秘密鍵は nolumialab の /srv/secrets/qrgen-key-intake/ にしか無い
+# （下の証明書は 2026-10-04 に失効する）。
+#
+# ⚠ 平文はこのジョブの一時ディレクトリの中だけを通る。ログに値を出さない。
+# ⚠ 移し終えたら、この workflow と Secrets を消すこと。
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    if: github.ref == 'refs/heads/main' && github.repository == 'kiyoteruhosoda/QRgen'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Seal the signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          umask 077
+          for name in KEYSTORE_BASE64 KEY_ALIAS STORE_PASSWORD KEY_PASSWORD; do
+            if [ -z "${!name}" ]; then echo "::error::$name is empty"; exit 1; fi
+          done
+
+          cat > intake-cert.pem <<'CERT'
+          -----BEGIN CERTIFICATE-----
+          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
+          -----END CERTIFICATE-----
+          CERT
+
+          work=$(mktemp -d)
+          printf '%s' "$KEYSTORE_BASE64" | base64 -di > "$work/upload-keystore.jks"
+          printf '%s\n' "$KEY_ALIAS" > "$work/alias"
+          printf '%s\n' "$STORE_PASSWORD" > "$work/store-pass"
+          printf '%s\n' "$KEY_PASSWORD" > "$work/key-pass"
+
+          mkdir -p out
+          tar -C "$work" -cf - . \
+            | openssl cms -encrypt -binary -aes256 -outform DER \
+                -recip intake-cert.pem -out out/qrgen-signing-key.p7m
+          rm -rf "$work"
+          echo "sealed: $(wc -c < out/qrgen-signing-key.p7m) bytes"
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: qrgen-signing-key-sealed
+          path: out/qrgen-signing-key.p7m
+          retention-days: 1
