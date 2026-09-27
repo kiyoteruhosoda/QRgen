@@ -6,7 +6,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutterbase/app/di/service_locator.dart';
 import 'package:flutterbase/application/usecases/scanner/read_scanned_code_from_image_usecase.dart';
 import 'package:flutterbase/infrastructure/scanner/mobile_scanner_image_reader.dart';
-import 'package:flutterbase/presentation/viewmodels/scanned_code_history_viewmodel.dart';
+import 'package:flutterbase/domain/value_objects/code_history_kind.dart';
+import 'package:flutterbase/presentation/viewmodels/code_history_viewmodel.dart';
+import 'package:flutterbase/presentation/widgets/code_history_section.dart';
 import 'package:flutterbase/shared/l10n/app_strings.dart';
 import 'package:flutterbase/shared/theme/theme.dart';
 
@@ -23,8 +25,8 @@ class _QrScannerPageState extends State<QrScannerPage>
   final MobileScannerController _controller = MobileScannerController();
   String? _scannedValue;
   bool _torchOn = false;
-  final ScannedCodeHistoryViewModel _historyViewModel =
-      sl<ScannedCodeHistoryViewModel>();
+  final CodeHistoryViewModel _historyViewModel =
+      sl<CodeHistoryViewModel>(instanceName: CodeHistoryKind.scanned.name);
   late final ReadScannedCodeFromImageUseCase _readFromImageUseCase;
   final ImagePicker _imagePicker = ImagePicker();
 
@@ -61,12 +63,13 @@ class _QrScannerPageState extends State<QrScannerPage>
     final value = barcode.rawValue;
     if (value == null || value == _scannedValue) return;
     setState(() => _scannedValue = value);
-    _historyViewModel.add(value);
+    _historyViewModel.recordUse(value);
   }
 
   Future<void> _copyToClipboard() async {
     if (_scannedValue == null) return;
     await Clipboard.setData(ClipboardData(text: _scannedValue!));
+    _historyViewModel.recordUse(_scannedValue!);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text(AppStrings.qrScannerCopied)),
@@ -75,6 +78,7 @@ class _QrScannerPageState extends State<QrScannerPage>
 
   Future<void> _openContent() async {
     if (_scannedValue == null) return;
+    _historyViewModel.recordUse(_scannedValue!);
     final uri = Uri.tryParse(_scannedValue!);
     if (uri != null && await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -85,7 +89,6 @@ class _QrScannerPageState extends State<QrScannerPage>
       const SnackBar(content: Text(AppStrings.qrScannerCannotOpen)),
     );
   }
-
 
   Future<void> _scanFromImage() async {
     final image = await _imagePicker.pickImage(source: ImageSource.gallery);
@@ -101,7 +104,7 @@ class _QrScannerPageState extends State<QrScannerPage>
 
     if (!mounted) return;
     setState(() => _scannedValue = value);
-    await _historyViewModel.add(value);
+    await _historyViewModel.recordUse(value);
   }
 
   Future<void> _toggleTorch() async {
@@ -150,9 +153,7 @@ class _QrScannerPageState extends State<QrScannerPage>
                 child: Column(
                   children: [
                     _IconCircleButton(
-                      icon: _torchOn
-                          ? Icons.flash_on
-                          : Icons.flash_off,
+                      icon: _torchOn ? Icons.flash_on : Icons.flash_off,
                       tooltip: _torchOn
                           ? AppStrings.qrScannerTorchOff
                           : AppStrings.qrScannerTorchOn,
@@ -231,12 +232,12 @@ class _QrScannerPageState extends State<QrScannerPage>
                     ),
                   ],
                 ),
-	              ],
-	            ),
-	          ),
-	        ),
+              ],
+            ),
+          ),
+        ),
 
-	        Container(
+        Container(
           width: double.infinity,
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.pageMargin,
@@ -244,51 +245,11 @@ class _QrScannerPageState extends State<QrScannerPage>
             AppSpacing.pageMargin,
             AppSpacing.pageMargin,
           ),
-          child: ListenableBuilder(
-            listenable: _historyViewModel,
-            builder: (context, _) {
-              final history = _historyViewModel.items;
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    AppStrings.qrScannerHistory,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  SizedBox(
-                    height: 120,
-                    child: history.isEmpty
-                        ? Center(
-                            child: Text(
-                              AppStrings.qrScannerNoHistory,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          )
-                        : ListView.separated(
-                            itemCount: history.length,
-                            separatorBuilder: (_, __) => const Divider(height: 1),
-                            itemBuilder: (context, index) {
-                              final item = history[index];
-                              return ListTile(
-                                dense: true,
-                                contentPadding: EdgeInsets.zero,
-                                title: Text(
-                                  item.value,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                subtitle: Text(
-                                  item.scannedAt.toLocal().toIso8601String().replaceFirst('T', ' ').split('.').first,
-                                ),
-                                onTap: () => setState(() => _scannedValue = item.value),
-                              );
-                            },
-                          ),
-                  ),
-                ],
-              );
-            },
+          child: CodeHistorySection(
+            viewModel: _historyViewModel,
+            emptyText: AppStrings.qrScannerNoHistory,
+            listHeight: 120,
+            onSelect: (value) => setState(() => _scannedValue = value),
           ),
         ),
       ],
