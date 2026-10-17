@@ -32,7 +32,7 @@ dependencies:
   mobile_scanner: ^7.0.0
 
   # Package info
-  package_info_plus: ^8.0.0
+  package_info_plus: ^10.2.2
 
   # Log files directory
   path_provider: ^2.1.0
@@ -41,7 +41,7 @@ dependencies:
   qr_flutter: ^4.1.0
 
   # Share sheet for exported logs (task #411)
-  share_plus: ^11.0.0
+  share_plus: ^13.3.1
 
   # Shared preferences
   shared_preferences: ^2.3.0
