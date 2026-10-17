@@ -4,14 +4,14 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'dart:io';
 
 import 'package:flutterbase/app/di/service_locator.dart';
+import 'package:flutterbase/domain/repositories/picture_gallery.dart';
 import 'package:flutterbase/domain/value_objects/code_history_kind.dart';
 import 'package:flutterbase/presentation/viewmodels/code_history_viewmodel.dart';
 import 'package:flutterbase/presentation/widgets/code_history_section.dart';
+import 'package:flutterbase/shared/errors/app_error.dart';
 import 'package:flutterbase/shared/l10n/app_strings.dart';
 import 'package:flutterbase/shared/theme/theme.dart';
 
@@ -104,23 +104,26 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
       await _writePng(bytes);
       _recordCurrent();
 
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppStrings.qrGeneratorSaved)),
-      );
+      _showSnackBar(AppStrings.qrGeneratorSaved);
+    } on AccessDeniedError {
+      _showSnackBar(AppStrings.qrGeneratorSaveDenied);
     } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppStrings.qrGeneratorSaveError)),
-      );
+      _showSnackBar(AppStrings.qrGeneratorSaveError);
     }
   }
 
+  /// Saves into the photo gallery (album "QRgen"), where the user can find
+  /// and share it — not the app's private folder.
   Future<void> _writePng(Uint8List bytes) async {
-    final dir = await getApplicationDocumentsDirectory();
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final file = File('${dir.path}/qrcode_$timestamp.png');
-    await file.writeAsBytes(bytes);
+    await sl<PictureGallery>().savePng(bytes, name: 'qrcode_$timestamp');
+  }
+
+  void _showSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override

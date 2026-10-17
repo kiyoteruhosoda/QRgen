@@ -1,0 +1,6 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The Flutter tool needs this to talk to the app while developing
+         (hot reload, debugger). The app itself does not use the network, so
+         the release manifest (src/main) does not ask for it. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+</manifest>

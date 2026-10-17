@@ -147,12 +147,6 @@ class _DebugPageState extends State<DebugPage> {
           ),
           const SizedBox(height: AppSpacing.sm),
           AppListCard(
-            title: AppStrings.debugClearCache,
-            leading: const Icon(Icons.cleaning_services_outlined),
-            onTap: () => _showSnackBar(AppStrings.debugClearCacheSuccess),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          AppListCard(
             title: AppStrings.debugTestCrash,
             leading: Icon(Icons.warning, color: AppColors.statusError),
             onTap: _showCrashConfirmDialog,
