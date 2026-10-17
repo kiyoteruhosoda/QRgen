@@ -3,8 +3,8 @@ import 'package:flutterbase/domain/repositories/app_info_repository.dart';
 import 'package:flutterbase/shared/build_info.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-/// Retrieves app version from [PackageInfo] and build metadata from
-/// [BuildInfo].
+/// Retrieves app version and build number from [PackageInfo] and the rest
+/// of the build metadata from [BuildInfo].
 final class PackageInfoAppInfoRepository implements AppInfoRepository {
   const PackageInfoAppInfoRepository();
 
@@ -18,9 +18,16 @@ final class PackageInfoAppInfoRepository implements AppInfoRepository {
         ? packageInfo.version
         : BuildInfo.version;
 
+    // Same for the build number (task #468): BuildInfo's copy in the
+    // repository is a stale placeholder until the release regenerates it,
+    // whereas PackageInfo is the versionCode the device actually installed.
+    final buildNumber = packageInfo.buildNumber.isNotEmpty
+        ? packageInfo.buildNumber
+        : BuildInfo.buildNumber;
+
     return AppInfoDto(
       version: version,
-      buildNumber: BuildInfo.buildNumber,
+      buildNumber: buildNumber,
       gitCommit: BuildInfo.gitCommit,
       gitCommitFull: BuildInfo.gitCommitFull,
       flutterVersion: BuildInfo.flutterVersion,
