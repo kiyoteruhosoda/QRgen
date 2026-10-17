@@ -5,5 +5,6 @@ class ReadScannedCodeFromImageUseCase {
 
   final ScannedCodeImageReader _reader;
 
-  Future<String?> execute(String imagePath) => _reader.readFromImagePath(imagePath);
+  Future<String?> execute(String imagePath) =>
+      _reader.readFromImagePath(imagePath);
 }

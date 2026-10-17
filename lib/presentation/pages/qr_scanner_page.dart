@@ -1,17 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutterbase/app/di/service_locator.dart';
 import 'package:flutterbase/application/usecases/scanner/read_scanned_code_from_image_usecase.dart';
-import 'package:flutterbase/infrastructure/scanner/mobile_scanner_image_reader.dart';
 import 'package:flutterbase/domain/value_objects/code_history_kind.dart';
+import 'package:flutterbase/infrastructure/scanner/mobile_scanner_image_reader.dart';
 import 'package:flutterbase/presentation/viewmodels/code_history_viewmodel.dart';
 import 'package:flutterbase/presentation/widgets/code_history_section.dart';
 import 'package:flutterbase/presentation/widgets/scan_region_overlay.dart';
 import 'package:flutterbase/shared/l10n/app_strings.dart';
 import 'package:flutterbase/shared/theme/theme.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// QR code scanner tab content.
 class QrScannerPage extends StatefulWidget {
@@ -70,7 +72,7 @@ class _QrScannerPageState extends State<QrScannerPage>
   Future<void> _copyToClipboard() async {
     if (_scannedValue == null) return;
     await Clipboard.setData(ClipboardData(text: _scannedValue!));
-    _historyViewModel.recordUse(_scannedValue!);
+    unawaited(_historyViewModel.recordUse(_scannedValue!));
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text(AppStrings.qrScannerCopied)),
@@ -79,7 +81,7 @@ class _QrScannerPageState extends State<QrScannerPage>
 
   Future<void> _openContent() async {
     if (_scannedValue == null) return;
-    _historyViewModel.recordUse(_scannedValue!);
+    unawaited(_historyViewModel.recordUse(_scannedValue!));
     final uri = Uri.tryParse(_scannedValue!);
     if (uri != null && await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -129,7 +131,7 @@ class _QrScannerPageState extends State<QrScannerPage>
                 errorBuilder: (context, error) {
                   return _PermissionError(
                     error: error,
-                    onRetry: () => _controller.start(),
+                    onRetry: _controller.start,
                   );
                 },
               ),
@@ -158,7 +160,7 @@ class _QrScannerPageState extends State<QrScannerPage>
                     _IconCircleButton(
                       icon: Icons.cameraswitch_outlined,
                       tooltip: AppStrings.qrScannerSwitchCamera,
-                      onPressed: () => _controller.switchCamera(),
+                      onPressed: _controller.switchCamera,
                     ),
                   ],
                 ),
@@ -246,7 +248,7 @@ class _QrScannerPageState extends State<QrScannerPage>
   }
 }
 
-// ─── Helper widgets ───────────────────────────────────────────────────────────
+// ─── Helper widgets ──────────────────────────────────────────────────────────
 
 class _IconCircleButton extends StatelessWidget {
   const _IconCircleButton({

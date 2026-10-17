@@ -1,5 +1,5 @@
-import 'package:share_plus/share_plus.dart';
 import 'package:flutterbase/domain/repositories/file_sharer.dart';
+import 'package:share_plus/share_plus.dart';
 
 /// [FileSharer] backed by `share_plus` (the Android share sheet).
 final class SharePlusFileSharer implements FileSharer {
