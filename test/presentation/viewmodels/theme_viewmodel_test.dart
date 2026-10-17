@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutterbase/app/di/service_locator.dart';
 import 'package:flutterbase/application/usecases/theme/get_theme_preference_usecase.dart';
 import 'package:flutterbase/application/usecases/theme/set_theme_preference_usecase.dart';
 import 'package:flutterbase/domain/repositories/theme_preference_repository.dart';
+import 'package:flutterbase/infrastructure/logging/persistent_app_logger.dart';
 import 'package:flutterbase/presentation/viewmodels/theme_viewmodel.dart';
+import 'package:flutterbase/shared/logging/app_logger.dart';
 import 'package:flutterbase/shared/value_objects/app_theme_mode.dart';
 
 // ─── Fake repository ──────────────────────────────────────────────────────────
@@ -32,6 +35,14 @@ ThemeViewModel _makeViewModel([AppThemeMode initial = AppThemeMode.light]) {
 // ─── Tests ───────────────────────────────────────────────────────────────────
 
 void main() {
+  // ThemeViewModel logs through the service locator.
+  setUpAll(() {
+    if (!sl.isRegistered<AppLogger>()) {
+      sl.registerSingleton<AppLogger>(PersistentAppLogger());
+    }
+  });
+  tearDownAll(() => sl.reset());
+
   group('ThemeViewModel', () {
     test('defaults to light mode when no preference is saved', () {
       expect(_makeViewModel().themeMode, equals(ThemeMode.light));

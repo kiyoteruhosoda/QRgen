@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutterbase/app/di/service_locator.dart';
+import 'package:flutterbase/domain/repositories/file_sharer.dart';
 import 'package:flutterbase/presentation/widgets/ui/widgets.dart';
 import 'package:flutterbase/shared/l10n/app_strings.dart';
 import 'package:flutterbase/shared/logging/app_logger.dart';
@@ -66,12 +67,23 @@ class _LogsPageState extends State<LogsPage> {
     );
   }
 
+  /// Writes the buffer to a file and opens the share sheet, so the user
+  /// chooses where it goes (Files, Drive, mail). The file itself stays in the
+  /// app's private folder, which no other app can read.
   Future<void> _exportLogs() async {
     final path = await _logger.exportLogs();
+    if (path != null) {
+      try {
+        await sl<FileSharer>().shareFile(path, mimeType: 'text/plain');
+        return;
+      } catch (_) {
+        // Fall through to the error message.
+      }
+    }
     if (!mounted) return;
-    final msg =
-        path != null ? AppStrings.logsDownloadSuccess : AppStrings.logsDownloadError;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text(AppStrings.logsDownloadError)),
+    );
   }
 
   Future<void> _confirmClear() async {

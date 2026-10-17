@@ -58,13 +58,6 @@ class _MainPageState extends State<MainPage> {
             tooltip: AppStrings.commonMenu,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
-            tooltip: AppStrings.commonNotifications,
-          ),
-        ],
       ),
       drawer: ListenableBuilder(
         listenable: sl<DebugSettingsViewModel>(),

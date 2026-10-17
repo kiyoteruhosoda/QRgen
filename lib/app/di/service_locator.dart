@@ -1,6 +1,10 @@
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:flutterbase/domain/repositories/file_sharer.dart';
+import 'package:flutterbase/domain/repositories/picture_gallery.dart';
+import 'package:flutterbase/infrastructure/gallery/gal_picture_gallery.dart';
+import 'package:flutterbase/infrastructure/sharing/share_plus_file_sharer.dart';
 import 'package:flutterbase/application/usecases/app_info/get_app_info_usecase.dart';
 import 'package:flutterbase/application/usecases/debug/get_debug_settings_usecase.dart';
 import 'package:flutterbase/application/usecases/debug/set_debug_mode_usecase.dart';
@@ -59,6 +63,9 @@ Future<void> setupServiceLocator() async {
   sl.registerSingleton<AppInfoRepository>(
     const PackageInfoAppInfoRepository(),
   );
+
+  sl.registerSingleton<PictureGallery>(const GalPictureGallery());
+  sl.registerSingleton<FileSharer>(const SharePlusFileSharer());
 
   // One history per tab, told apart by instance name.
   for (final kind in CodeHistoryKind.values) {

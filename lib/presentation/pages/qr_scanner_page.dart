@@ -9,6 +9,7 @@ import 'package:flutterbase/infrastructure/scanner/mobile_scanner_image_reader.d
 import 'package:flutterbase/domain/value_objects/code_history_kind.dart';
 import 'package:flutterbase/presentation/viewmodels/code_history_viewmodel.dart';
 import 'package:flutterbase/presentation/widgets/code_history_section.dart';
+import 'package:flutterbase/presentation/widgets/scan_region_overlay.dart';
 import 'package:flutterbase/shared/l10n/app_strings.dart';
 import 'package:flutterbase/shared/theme/theme.dart';
 
@@ -132,20 +133,8 @@ class _QrScannerPageState extends State<QrScannerPage>
                   );
                 },
               ),
-              // Overlay: scan region indicator
-              Center(
-                child: Container(
-                  width: 220,
-                  height: 220,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: colorScheme.primary,
-                      width: 3,
-                    ),
-                    borderRadius: AppRadius.mdBorder,
-                  ),
-                ),
-              ),
+              // Overlay: scan region indicator (hidden on camera errors)
+              ScanRegionOverlay(scannerState: _controller),
               // Torch & camera-switch controls
               Positioned(
                 bottom: AppSpacing.md,

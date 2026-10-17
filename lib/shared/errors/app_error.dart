@@ -25,3 +25,8 @@ final class UnexpectedError extends AppError {
   final Object? cause;
   final StackTrace? stackTrace;
 }
+
+/// The user refused a permission the operation needs.
+final class AccessDeniedError extends AppError {
+  const AccessDeniedError(super.message);
+}

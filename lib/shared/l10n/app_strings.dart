@@ -49,7 +49,9 @@ class AppStrings {
   static const String qrGeneratorCopy = 'Copy Text';
   static const String qrGeneratorDownload = 'Save Image';
   static const String qrGeneratorCopied = 'Text copied to clipboard';
-  static const String qrGeneratorSaved = 'QR code saved successfully';
+  static const String qrGeneratorSaved = 'QR code saved to Photos';
+  static const String qrGeneratorSaveDenied =
+      'Could not save: allow QRgen to add photos in Settings';
   static const String qrGeneratorSaveError = 'Failed to save QR code';
   static const String qrGeneratorErrorCorrection = 'Error correction';
   static const String qrGeneratorNoHistory = 'No generated codes yet';
@@ -105,8 +107,6 @@ class AppStrings {
   static const String debugActionsSection = 'Debug Actions';
   static const String debugClearLogs = 'Clear Logs';
   static const String debugClearLogsSuccess = 'Logs cleared';
-  static const String debugClearCache = 'Clear Cache';
-  static const String debugClearCacheSuccess = 'Cache cleared';
   static const String debugTestCrash = 'Test Crash';
   static const String debugTestCrashTitle = 'Test Crash';
   static const String debugTestCrashBody =
@@ -140,7 +140,6 @@ class AppStrings {
       'Delete all log entries from memory?';
   static const String logsClearSuccess = 'Logs cleared';
   static const String logsDownload = 'Export';
-  static const String logsDownloadSuccess = 'Logs saved to file';
   static const String logsDownloadError = 'Failed to save logs';
   static const String logsEmpty = 'No log entries';
   static const String logsCancel = 'Cancel';
@@ -165,7 +164,6 @@ class AppStrings {
   // ─── Common ──────────────────────────────────────────────────────────
   static const String commonRetry = 'Retry';
   static const String commonMenu = 'Menu';
-  static const String commonNotifications = 'Notifications';
   static const String commonNotFound = '404 - Page not found';
   static const String commonPageNotFound = 'Page Not Found';
   static const String commonLoading = 'Loading...';

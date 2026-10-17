@@ -14,19 +14,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  # Navigation
-  go_router: ^13.0.0
-
-  # State management
-  flutter_riverpod: ^2.5.1
-  riverpod_annotation: ^2.3.5
-
   # DI
   get_it: ^7.7.0
-
-  # SQLite
-  sqflite: ^2.3.3
-  path: ^1.9.0
 
   # Package info
   package_info_plus: ^8.0.0
@@ -39,6 +28,12 @@ dependencies:
 
   # QR code generation
   qr_flutter: ^4.1.0
+
+  # Save generated codes into the photo gallery (task #411)
+  gal: ^2.3.0
+
+  # Share sheet for exported logs (task #411)
+  share_plus: ^11.0.0
 
   # Image picker (scan from gallery)
   image_picker: ^1.1.2
@@ -60,9 +55,7 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^4.0.0
   build_runner: ^2.4.11
-  riverpod_generator: ^2.4.3
   mockito: ^5.4.4
-  sqflite_common_ffi: ^2.3.3
 
 flutter:
   uses-material-design: true
