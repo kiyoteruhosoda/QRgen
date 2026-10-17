@@ -4,7 +4,6 @@ import 'package:flutterbase/application/usecases/debug/get_debug_settings_usecas
 import 'package:flutterbase/application/usecases/debug/set_debug_mode_usecase.dart';
 import 'package:flutterbase/application/usecases/debug/set_log_level_usecase.dart';
 import 'package:flutterbase/shared/logging/app_logger.dart';
-import 'package:flutterbase/shared/logging/log_level.dart';
 
 /// Manages debug mode and log-level preferences.
 ///
@@ -20,7 +19,8 @@ class DebugSettingsViewModel extends ChangeNotifier {
     _debugEnabled = _getSettings.executeDebugMode();
     _logLevel = _getSettings.executeLogLevel();
     sl<AppLogger>().debug(
-      '[DebugSettingsViewModel] init — debugEnabled: $_debugEnabled, logLevel: ${_logLevel.name}',
+      '[DebugSettingsViewModel] init — debugEnabled: $_debugEnabled, '
+      'logLevel: ${_logLevel.name}',
     );
   }
 

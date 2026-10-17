@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:flutterbase/shared/theme/theme.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 /// The square that shows where to hold a code, drawn over the camera.
 ///

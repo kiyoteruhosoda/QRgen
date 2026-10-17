@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:gal/gal.dart';
 import 'package:flutterbase/domain/repositories/picture_gallery.dart';
 import 'package:flutterbase/shared/errors/app_error.dart';
+import 'package:gal/gal.dart';
 
 /// [PictureGallery] backed by the `gal` plugin (MediaStore on Android), so a
 /// saved picture lands in Photos under the [album] instead of the app's

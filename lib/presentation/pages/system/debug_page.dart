@@ -60,7 +60,7 @@ class _DebugPageState extends State<DebugPage> {
             ),
             child: Row(
               children: [
-                Icon(Icons.warning_amber, color: AppColors.statusWarning),
+                const Icon(Icons.warning_amber, color: AppColors.statusWarning),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
@@ -76,7 +76,7 @@ class _DebugPageState extends State<DebugPage> {
           const SizedBox(height: AppSpacing.lg),
 
           // App info card
-          AppSectionHeader(title: AppStrings.debugAppInfoSection),
+          const AppSectionHeader(title: AppStrings.debugAppInfoSection),
           const SizedBox(height: AppSpacing.sm),
           switch (_viewModel.state) {
             DebugState.loading => const AppLoadingView(),
@@ -89,7 +89,7 @@ class _DebugPageState extends State<DebugPage> {
           const SizedBox(height: AppSpacing.lg),
 
           // Theme info card
-          AppSectionHeader(title: AppStrings.debugThemeSection),
+          const AppSectionHeader(title: AppStrings.debugThemeSection),
           const SizedBox(height: AppSpacing.sm),
           AppCard(
             child: Column(
@@ -135,7 +135,7 @@ class _DebugPageState extends State<DebugPage> {
           const SizedBox(height: AppSpacing.lg),
 
           // Actions card
-          AppSectionHeader(title: AppStrings.debugActionsSection),
+          const AppSectionHeader(title: AppStrings.debugActionsSection),
           const SizedBox(height: AppSpacing.sm),
           AppListCard(
             title: AppStrings.debugClearLogs,
@@ -148,7 +148,7 @@ class _DebugPageState extends State<DebugPage> {
           const SizedBox(height: AppSpacing.sm),
           AppListCard(
             title: AppStrings.debugTestCrash,
-            leading: Icon(Icons.warning, color: AppColors.statusError),
+            leading: const Icon(Icons.warning, color: AppColors.statusError),
             onTap: _showCrashConfirmDialog,
           ),
         ],

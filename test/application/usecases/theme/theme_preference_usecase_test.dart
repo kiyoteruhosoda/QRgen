@@ -4,7 +4,7 @@ import 'package:flutterbase/application/usecases/theme/set_theme_preference_usec
 import 'package:flutterbase/domain/repositories/theme_preference_repository.dart';
 import 'package:flutterbase/shared/value_objects/app_theme_mode.dart';
 
-// ─── Fake repository ──────────────────────────────────────────────────────────
+// ─── Fake repository ─────────────────────────────────────────────────────────
 
 class _FakeThemePreferenceRepository implements ThemePreferenceRepository {
   AppThemeMode _mode = AppThemeMode.light;

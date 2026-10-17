@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'app_colors.dart';
-import 'app_radius.dart';
-import 'app_spacing.dart';
-import 'app_text_styles.dart';
+import 'package:flutterbase/shared/theme/app_colors.dart';
+import 'package:flutterbase/shared/theme/app_radius.dart';
+import 'package:flutterbase/shared/theme/app_spacing.dart';
+import 'package:flutterbase/shared/theme/app_text_styles.dart';
 
 /// デジタル庁デザインシステム準拠のアプリテーマ
 class AppTheme {
@@ -32,8 +32,7 @@ class AppTheme {
       drawerTheme: _buildDrawerTheme(isDark: isDark),
       navigationBarTheme: _buildNavigationBarTheme(isDark: isDark),
       snackBarTheme: _buildSnackBarTheme(isDark: isDark),
-      scaffoldBackgroundColor:
-          isDark ? AppColors.darkBgBase : AppColors.bgBase,
+      scaffoldBackgroundColor: isDark ? AppColors.darkBgBase : AppColors.bgBase,
     );
   }
 
@@ -102,41 +101,26 @@ class AppTheme {
 
   // ─── Component Themes ──────────────────────────────────────────────
   static TextTheme _buildTextTheme({required bool isDark}) {
-    final baseColor =
-        isDark ? AppColors.darkTextBody : AppColors.textBody;
+    final baseColor = isDark ? AppColors.darkTextBody : AppColors.textBody;
     return TextTheme(
-      displayLarge:
-          AppTextStyles.displayLarge.copyWith(color: baseColor),
-      displayMedium:
-          AppTextStyles.displayMedium.copyWith(color: baseColor),
-      displaySmall:
-          AppTextStyles.displaySmall.copyWith(color: baseColor),
-      headlineLarge:
-          AppTextStyles.headlineLarge.copyWith(color: baseColor),
-      headlineMedium:
-          AppTextStyles.headlineMedium.copyWith(color: baseColor),
-      headlineSmall:
-          AppTextStyles.headlineSmall.copyWith(color: baseColor),
-      titleLarge:
-          AppTextStyles.titleLarge.copyWith(color: baseColor),
-      titleMedium:
-          AppTextStyles.titleMedium.copyWith(color: baseColor),
-      titleSmall:
-          AppTextStyles.titleSmall.copyWith(color: baseColor),
+      displayLarge: AppTextStyles.displayLarge.copyWith(color: baseColor),
+      displayMedium: AppTextStyles.displayMedium.copyWith(color: baseColor),
+      displaySmall: AppTextStyles.displaySmall.copyWith(color: baseColor),
+      headlineLarge: AppTextStyles.headlineLarge.copyWith(color: baseColor),
+      headlineMedium: AppTextStyles.headlineMedium.copyWith(color: baseColor),
+      headlineSmall: AppTextStyles.headlineSmall.copyWith(color: baseColor),
+      titleLarge: AppTextStyles.titleLarge.copyWith(color: baseColor),
+      titleMedium: AppTextStyles.titleMedium.copyWith(color: baseColor),
+      titleSmall: AppTextStyles.titleSmall.copyWith(color: baseColor),
       bodyLarge: AppTextStyles.bodyLarge.copyWith(color: baseColor),
-      bodyMedium:
-          AppTextStyles.bodyMedium.copyWith(color: baseColor),
+      bodyMedium: AppTextStyles.bodyMedium.copyWith(color: baseColor),
       bodySmall: AppTextStyles.bodySmall.copyWith(
-        color: isDark
-            ? AppColors.darkTextDescription
-            : AppColors.textDescription,
+        color:
+            isDark ? AppColors.darkTextDescription : AppColors.textDescription,
       ),
-      labelLarge:
-          AppTextStyles.labelLarge.copyWith(color: baseColor),
-      labelMedium:
-          AppTextStyles.labelMedium.copyWith(color: baseColor),
-      labelSmall:
-          AppTextStyles.labelSmall.copyWith(color: baseColor),
+      labelLarge: AppTextStyles.labelLarge.copyWith(color: baseColor),
+      labelMedium: AppTextStyles.labelMedium.copyWith(color: baseColor),
+      labelSmall: AppTextStyles.labelSmall.copyWith(color: baseColor),
     );
   }
 
@@ -144,10 +128,8 @@ class AppTheme {
     return AppBarTheme(
       elevation: 0,
       scrolledUnderElevation: 1,
-      backgroundColor:
-          isDark ? AppColors.darkBgBase : AppColors.bgBase,
-      foregroundColor:
-          isDark ? AppColors.darkTextBody : AppColors.textBody,
+      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.bgBase,
+      foregroundColor: isDark ? AppColors.darkTextBody : AppColors.textBody,
       titleTextStyle: AppTextStyles.titleLarge.copyWith(
         color: isDark ? AppColors.darkTextBody : AppColors.textBody,
       ),
@@ -163,9 +145,8 @@ class AppTheme {
             ? AppColors.darkInteractivePrimary
             : AppColors.interactivePrimary,
         foregroundColor: isDark ? AppColors.sumi900 : AppColors.white,
-        disabledBackgroundColor: isDark
-            ? AppColors.sumi700
-            : AppColors.interactivePrimaryDisabled,
+        disabledBackgroundColor:
+            isDark ? AppColors.sumi700 : AppColors.interactivePrimaryDisabled,
         disabledForegroundColor: AppColors.textDisabled,
         minimumSize: const Size(0, AppSpacing.minTapTarget),
         padding: const EdgeInsets.symmetric(
@@ -206,8 +187,7 @@ class AppTheme {
     );
   }
 
-  static TextButtonThemeData _buildTextButtonTheme(
-      {required bool isDark}) {
+  static TextButtonThemeData _buildTextButtonTheme({required bool isDark}) {
     return TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: isDark
@@ -227,59 +207,46 @@ class AppTheme {
       {required bool isDark}) {
     return InputDecorationTheme(
       filled: true,
-      fillColor:
-          isDark ? AppColors.darkBgLayer1 : AppColors.bgLayer1,
+      fillColor: isDark ? AppColors.darkBgLayer1 : AppColors.bgLayer1,
       border: OutlineInputBorder(
         borderRadius: AppRadius.smBorder,
         borderSide: BorderSide(
-          color: isDark
-              ? AppColors.darkBorderDefault
-              : AppColors.borderDefault,
+          color: isDark ? AppColors.darkBorderDefault : AppColors.borderDefault,
         ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: AppRadius.smBorder,
         borderSide: BorderSide(
-          color: isDark
-              ? AppColors.darkBorderDefault
-              : AppColors.borderDefault,
+          color: isDark ? AppColors.darkBorderDefault : AppColors.borderDefault,
         ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: AppRadius.smBorder,
         borderSide: BorderSide(
-          color: isDark
-              ? AppColors.darkBorderFocused
-              : AppColors.borderFocused,
+          color: isDark ? AppColors.darkBorderFocused : AppColors.borderFocused,
           width: 2,
         ),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: AppRadius.smBorder,
         borderSide: BorderSide(
-          color: isDark
-              ? AppColors.darkBorderError
-              : AppColors.borderError,
+          color: isDark ? AppColors.darkBorderError : AppColors.borderError,
         ),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: AppRadius.smBorder,
         borderSide: BorderSide(
-          color: isDark
-              ? AppColors.darkBorderError
-              : AppColors.borderError,
+          color: isDark ? AppColors.darkBorderError : AppColors.borderError,
           width: 2,
         ),
       ),
       labelStyle: AppTextStyles.bodyMedium.copyWith(
-        color: isDark
-            ? AppColors.darkTextDescription
-            : AppColors.textDescription,
+        color:
+            isDark ? AppColors.darkTextDescription : AppColors.textDescription,
       ),
       hintStyle: AppTextStyles.bodyMedium.copyWith(
-        color: isDark
-            ? AppColors.darkTextPlaceholder
-            : AppColors.textPlaceholder,
+        color:
+            isDark ? AppColors.darkTextPlaceholder : AppColors.textPlaceholder,
       ),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.lg,
@@ -295,9 +262,7 @@ class AppTheme {
       shape: RoundedRectangleBorder(
         borderRadius: AppRadius.lgBorder,
         side: BorderSide(
-          color: isDark
-              ? AppColors.darkBorderDefault
-              : AppColors.borderDefault,
+          color: isDark ? AppColors.darkBorderDefault : AppColors.borderDefault,
         ),
       ),
       margin: EdgeInsets.zero,
@@ -314,8 +279,7 @@ class AppTheme {
 
   static DrawerThemeData _buildDrawerTheme({required bool isDark}) {
     return DrawerThemeData(
-      backgroundColor:
-          isDark ? AppColors.darkBgBase : AppColors.bgBase,
+      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.bgBase,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topRight: Radius.circular(AppRadius.none),
@@ -328,8 +292,7 @@ class AppTheme {
   static NavigationBarThemeData _buildNavigationBarTheme(
       {required bool isDark}) {
     return NavigationBarThemeData(
-      backgroundColor:
-          isDark ? AppColors.darkBgBase : AppColors.bgBase,
+      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.bgBase,
       indicatorColor: Colors.transparent,
       iconTheme: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
@@ -375,4 +338,3 @@ class AppTheme {
     );
   }
 }
-

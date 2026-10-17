@@ -54,7 +54,7 @@ void main() {
     sl.registerSingleton<PictureGallery>(gallery);
   });
 
-  tearDown(() => sl.reset());
+  tearDown(sl.reset);
 
   Future<void> settleStorage(WidgetTester tester) async {
     await tester.runAsync(() => Future<void>.delayed(Duration.zero));
@@ -125,8 +125,7 @@ void main() {
     expect(find.text(AppStrings.qrGeneratorSaved), findsOneWidget);
   });
 
-  testWidgets('a refused permission is explained, not a crash',
-      (tester) async {
+  testWidgets('a refused permission is explained, not a crash', (tester) async {
     await sl.unregister<PictureGallery>();
     sl.registerSingleton<PictureGallery>(
       _FakeGallery(error: const AccessDeniedError('refused')),

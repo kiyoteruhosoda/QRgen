@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutterbase/app/di/service_locator.dart';
 import 'package:flutterbase/presentation/viewmodels/about_viewmodel.dart';
+import 'package:flutterbase/presentation/widgets/ui/app_icon_mark.dart';
 import 'package:flutterbase/shared/l10n/app_strings.dart';
+import 'package:flutterbase/shared/theme/theme.dart';
 
 /// Third-party package licenses page.
 ///
@@ -40,9 +42,12 @@ class _LicensesPageState extends State<LicensesPage> {
     final info = _viewModel.appInfo;
     return LicensePage(
       applicationName: AppStrings.appName,
-      applicationVersion: info == null
-          ? null
-          : '${info.version} (${info.buildNumber})',
+      applicationIcon: const Padding(
+        padding: EdgeInsets.symmetric(vertical: AppSpacing.lg),
+        child: AppIconMark(),
+      ),
+      applicationVersion:
+          info == null ? null : '${info.version} (${info.buildNumber})',
     );
   }
 }

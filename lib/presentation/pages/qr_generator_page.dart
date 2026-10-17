@@ -1,11 +1,8 @@
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:qr_flutter/qr_flutter.dart';
-
 import 'package:flutterbase/app/di/service_locator.dart';
 import 'package:flutterbase/domain/repositories/picture_gallery.dart';
 import 'package:flutterbase/domain/value_objects/code_history_kind.dart';
@@ -14,6 +11,7 @@ import 'package:flutterbase/presentation/widgets/code_history_section.dart';
 import 'package:flutterbase/shared/errors/app_error.dart';
 import 'package:flutterbase/shared/l10n/app_strings.dart';
 import 'package:flutterbase/shared/theme/theme.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 /// QR code generator tab content.
 class QrGeneratorPage extends StatefulWidget {
