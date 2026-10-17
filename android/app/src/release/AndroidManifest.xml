@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- The app does not use the network (task #410). src/main no longer asks
+         for INTERNET, but plugins (the bundled barcode scanner's libraries)
+         still merge it in; strip it from the release build only. Debug and
+         profile builds keep it for the Flutter tool (src/debug, src/profile). -->
+    <uses-permission
+        android:name="android.permission.INTERNET"
+        tools:node="remove" />
+</manifest>
