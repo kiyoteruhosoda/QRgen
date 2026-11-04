@@ -20,7 +20,7 @@ dependencies:
   gal: ^2.3.0
 
   # DI
-  get_it: ^7.7.0
+  get_it: ^9.0.0
 
   # Image picker (scan from gallery)
   image_picker: ^1.1.2
