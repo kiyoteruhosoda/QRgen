@@ -93,7 +93,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 
 android {
     namespace = "com.nolumia.qrcorebasic"
-    compileSdk = 36
+    compileSdk = 37
     ndkVersion = "28.2.13676358"
 
     compileOptions {
