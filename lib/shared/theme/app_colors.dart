@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// デジタル庁デザインシステム カラートークン
+/// Digital Agency (Japan) design system color tokens
 /// https://design.digital.go.jp/dads/foundations/color/
 class AppColors {
   AppColors._();
