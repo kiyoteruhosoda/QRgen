@@ -18,6 +18,6 @@ QR コードを読み取り・作る Android アプリ（Flutter）。
 
 ## 配布
 
-main へのマージで `.forgejo/workflows/version_bump.yml` が版を上げ、forge の push の知らせで deck が
+main へのマージ後、main の検査（test.yml）が全部緑なら最後のジョブ `bump-version` が版を上げ、forge の push の知らせで deck が
 ビルド・署名して share.nolumia.com へ配る（配ってよいアプリの一覧は deploy-repo の
 `resources/flutter-apps.json`）。
