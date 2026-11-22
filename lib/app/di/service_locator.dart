@@ -6,6 +6,7 @@ import 'package:flutterbase/application/usecases/history/clear_code_history_usec
 import 'package:flutterbase/application/usecases/history/delete_code_history_item_usecase.dart';
 import 'package:flutterbase/application/usecases/history/get_code_history_usecase.dart';
 import 'package:flutterbase/application/usecases/history/record_code_use_usecase.dart';
+import 'package:flutterbase/application/usecases/history/set_code_note_usecase.dart';
 import 'package:flutterbase/application/usecases/theme/get_theme_preference_usecase.dart';
 import 'package:flutterbase/application/usecases/theme/set_theme_preference_usecase.dart';
 import 'package:flutterbase/domain/repositories/app_info_repository.dart';
@@ -130,6 +131,7 @@ Future<void> setupServiceLocator() async {
       CodeHistoryViewModel(
         getHistory: GetCodeHistoryUseCase(repository),
         recordUse: RecordCodeUseUseCase(repository),
+        setNote: SetCodeNoteUseCase(repository),
         deleteItem: DeleteCodeHistoryItemUseCase(repository),
         clearHistory: ClearCodeHistoryUseCase(repository),
       ),

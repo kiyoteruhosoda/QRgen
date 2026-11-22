@@ -85,6 +85,51 @@ void main() {
       expect(all.first.value, 'v54');
     });
 
+    test('setNote changes only that entry and does not move it', () async {
+      final repo = repoFor('h');
+      await repo.recordUse(item('a', 1));
+      await repo.recordUse(item('b', 2));
+      await repo.setNote('a', 'office wifi');
+
+      final all = await repoFor('h').getAll();
+      expect(all.map((e) => e.value), ['b', 'a']);
+      expect(all.map((e) => e.note), [null, 'office wifi']);
+      expect(all.last.usedAt, DateTime.utc(2026, 9, 27, 0, 1));
+    });
+
+    test('using a code again keeps its note', () async {
+      final repo = repoFor('h');
+      await repo.recordUse(item('a', 1));
+      await repo.setNote('a', 'office wifi');
+      await repo.recordUse(item('a', 2));
+
+      expect((await repo.getAll()).single.note, 'office wifi');
+    });
+
+    test('a null note removes it', () async {
+      final repo = repoFor('h');
+      await repo.recordUse(item('a', 1));
+      await repo.setNote('a', 'office wifi');
+      await repo.setNote('a', null);
+
+      expect((await repo.getAll()).single.note, isNull);
+    });
+
+    test('entries with a note do not age out', () async {
+      final repo = repoFor('h');
+      await repo.recordUse(item('noted', 0));
+      await repo.setNote('noted', 'keep me');
+      for (var i = 1; i <= 55; i++) {
+        await repo.recordUse(item('v$i', i));
+      }
+
+      final all = await repo.getAll();
+      expect(all, hasLength(51));
+      expect(all.last.value, 'noted');
+      expect(all.last.note, 'keep me');
+      expect(all[49].value, 'v6');
+    });
+
     test('reads scan history saved by earlier versions', () async {
       SharedPreferences.setMockInitialValues({
         SharedPreferencesCodeHistoryRepository.scannedStorageKey: [
@@ -102,6 +147,7 @@ void main() {
       final all = await repo.getAll();
       expect(all.single.value, 'old');
       expect(all.single.usedAt, DateTime.utc(2026, 9, 1));
+      expect(all.single.note, isNull);
     });
   });
 }

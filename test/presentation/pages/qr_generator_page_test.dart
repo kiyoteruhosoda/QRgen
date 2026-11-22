@@ -7,6 +7,7 @@ import 'package:flutterbase/application/usecases/history/clear_code_history_usec
 import 'package:flutterbase/application/usecases/history/delete_code_history_item_usecase.dart';
 import 'package:flutterbase/application/usecases/history/get_code_history_usecase.dart';
 import 'package:flutterbase/application/usecases/history/record_code_use_usecase.dart';
+import 'package:flutterbase/application/usecases/history/set_code_note_usecase.dart';
 import 'package:flutterbase/domain/repositories/picture_gallery.dart';
 import 'package:flutterbase/domain/value_objects/code_history_kind.dart';
 import 'package:flutterbase/infrastructure/repositories/shared_preferences_code_history_repository.dart';
@@ -42,6 +43,7 @@ void main() {
     viewModel = CodeHistoryViewModel(
       getHistory: GetCodeHistoryUseCase(repo),
       recordUse: RecordCodeUseUseCase(repo),
+      setNote: SetCodeNoteUseCase(repo),
       deleteItem: DeleteCodeHistoryItemUseCase(repo),
       clearHistory: ClearCodeHistoryUseCase(repo),
     );
@@ -102,6 +104,25 @@ void main() {
     final field = tester.widget<TextField>(find.byType(TextField));
     expect(field.controller!.text, 'older');
     expect(viewModel.items.map((e) => e.value), ['older', 'newer']);
+  });
+
+  testWidgets('a note can be added straight after typing', (tester) async {
+    await pumpPage(tester);
+    await tester.enterText(find.byType(TextField), 'https://a.example');
+    FocusManager.instance.primaryFocus?.unfocus();
+    await settleStorage(tester);
+
+    await tester.ensureVisible(find.byTooltip(AppStrings.noteAdd));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip(AppStrings.noteAdd));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).last, 'shop');
+    await tester.tap(find.text(AppStrings.noteSave));
+    await tester.pumpAndSettle();
+    await settleStorage(tester);
+
+    expect(viewModel.items.single.value, 'https://a.example');
+    expect(viewModel.items.single.note, 'shop');
   });
 
   Future<void> saveImage(WidgetTester tester) async {

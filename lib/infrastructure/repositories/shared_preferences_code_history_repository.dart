@@ -13,7 +13,10 @@ class SharedPreferencesCodeHistoryRepository implements CodeHistoryRepository {
   /// Key of the scan history. Kept as-is so existing history survives.
   static const scannedStorageKey = 'scanned_code_history';
   static const generatedStorageKey = 'generated_code_history';
-  static const _maxItems = 50;
+
+  /// Limit for entries without a note. A note is typed by the user, so it
+  /// must not disappear just because other codes were used later.
+  static const _maxItemsWithoutNote = 50;
 
   final SharedPreferences _prefs;
   final String storageKey;
@@ -21,9 +24,21 @@ class SharedPreferencesCodeHistoryRepository implements CodeHistoryRepository {
 
   @override
   Future<void> recordUse(CodeHistoryItem item) {
+    return _update((current) {
+      final previous = current.where((e) => e.value == item.value).firstOrNull;
+      final used = item.withNote(item.note ?? previous?.note);
+      var withoutNote = 0;
+      return [used, ...current.where((e) => e.value != item.value)]
+          .where((e) => e.note != null || ++withoutNote <= _maxItemsWithoutNote)
+          .toList(growable: false);
+    });
+  }
+
+  @override
+  Future<void> setNote(String value, String? note) {
     return _update(
-      (current) => [item, ...current.where((e) => e.value != item.value)]
-          .take(_maxItems)
+      (current) => current
+          .map((e) => e.value == value ? e.withNote(note) : e)
           .toList(growable: false),
     );
   }
@@ -56,6 +71,7 @@ class SharedPreferencesCodeHistoryRepository implements CodeHistoryRepository {
             return CodeHistoryItem(
               value: value,
               usedAt: DateTime.parse(usedAt).toUtc(),
+              note: data['note'] as String?,
             );
           } catch (_) {
             return null;
@@ -77,6 +93,7 @@ class SharedPreferencesCodeHistoryRepository implements CodeHistoryRepository {
             (e) => jsonEncode({
               'value': e.value,
               'usedAt': e.usedAt.toIso8601String(),
+              if (e.note != null) 'note': e.note,
             }),
           )
           .toList(growable: false);

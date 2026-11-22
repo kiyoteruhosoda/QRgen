@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutterbase/domain/entities/code_history_item.dart';
 import 'package:flutterbase/presentation/viewmodels/code_history_viewmodel.dart';
+import 'package:flutterbase/presentation/widgets/code_note_dialog.dart';
 import 'package:flutterbase/shared/l10n/app_strings.dart';
 import 'package:flutterbase/shared/theme/theme.dart';
 
 /// History list shared by the scanner and generator tabs.
 ///
 /// Tapping an entry hands its value to [onSelect] and moves it to the top.
-/// Each entry can be deleted, and the whole list cleared after confirmation.
+/// Each entry can be given a note or deleted, and the whole list cleared after confirmation.
 class CodeHistorySection extends StatelessWidget {
   const CodeHistorySection({
     super.key,
@@ -52,6 +53,14 @@ class CodeHistorySection extends StatelessWidget {
     messenger
       ..hideCurrentSnackBar()
       ..showSnackBar(const SnackBar(content: Text(AppStrings.historyDeleted)));
+  }
+
+  Future<void> _editNote(BuildContext context, CodeHistoryItem item) async {
+    final note = await showDialog<String>(
+      context: context,
+      builder: (_) => CodeNoteDialog(item: item),
+    );
+    if (note != null) await viewModel.setNote(item.value, note);
   }
 
   void _select(String value) {
@@ -117,6 +126,7 @@ class CodeHistorySection extends StatelessWidget {
   }
 
   Widget _buildTile(BuildContext context, CodeHistoryItem item) {
+    final note = item.note;
     return Dismissible(
       key: ValueKey(item.value),
       direction: DismissDirection.endToStart,
@@ -138,18 +148,43 @@ class CodeHistorySection extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        subtitle: Text(
-          item.usedAt
-              .toLocal()
-              .toIso8601String()
-              .replaceFirst('T', ' ')
-              .split('.')
-              .first,
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (note != null)
+              Text(
+                note,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
+            Text(
+              item.usedAt
+                  .toLocal()
+                  .toIso8601String()
+                  .replaceFirst('T', ' ')
+                  .split('.')
+                  .first,
+            ),
+          ],
         ),
-        trailing: IconButton(
-          icon: const Icon(Icons.close),
-          tooltip: AppStrings.historyDelete,
-          onPressed: () => _delete(context, item.value),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: Icon(
+                note == null ? Icons.note_add_outlined : Icons.edit_note,
+              ),
+              tooltip: note == null ? AppStrings.noteAdd : AppStrings.noteEdit,
+              onPressed: () => _editNote(context, item),
+            ),
+            IconButton(
+              icon: const Icon(Icons.close),
+              tooltip: AppStrings.historyDelete,
+              onPressed: () => _delete(context, item.value),
+            ),
+          ],
         ),
         onTap: () => _select(item.value),
       ),
