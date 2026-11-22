@@ -11,6 +11,7 @@ import 'package:flutterbase/domain/value_objects/code_history_kind.dart';
 import 'package:flutterbase/infrastructure/repositories/shared_preferences_code_history_repository.dart';
 import 'package:flutterbase/presentation/pages/main_page.dart';
 import 'package:flutterbase/presentation/viewmodels/code_history_viewmodel.dart';
+import 'package:flutterbase/presentation/viewmodels/debug_settings_viewmodel.dart';
 import 'package:flutterbase/shared/l10n/app_strings.dart';
 import 'package:flutterbase/shared/theme/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +19,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../helpers/screenshot.dart';
 
 const _scanner = 'dev.steenbakker.mobile_scanner/scanner';
+
+/// The main page's drawer reads this; the notes do not depend on it.
+class _FakeDebugSettings extends Fake
+    with ChangeNotifier
+    implements DebugSettingsViewModel {
+  @override
+  bool get debugEnabled => false;
+}
 
 void main() {
   late CodeHistoryViewModel viewModel;
@@ -36,6 +45,7 @@ void main() {
       clearHistory: ClearCodeHistoryUseCase(repo),
     );
     await sl.reset();
+    sl.registerSingleton<DebugSettingsViewModel>(_FakeDebugSettings());
     sl.registerSingleton<CodeHistoryViewModel>(
       viewModel,
       instanceName: CodeHistoryKind.scanned.name,
