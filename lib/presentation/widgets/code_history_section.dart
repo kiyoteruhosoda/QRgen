@@ -8,7 +8,8 @@ import 'package:flutterbase/shared/theme/theme.dart';
 /// History list shared by the scanner and generator tabs.
 ///
 /// Tapping an entry hands its value to [onSelect] and moves it to the top.
-/// Each entry can be given a note or deleted, and the whole list cleared after confirmation.
+/// Each entry can be given a note or deleted, and the whole list cleared
+/// after confirmation.
 class CodeHistorySection extends StatelessWidget {
   const CodeHistorySection({
     super.key,
