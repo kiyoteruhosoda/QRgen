@@ -4,6 +4,7 @@ import 'package:flutterbase/application/usecases/history/clear_code_history_usec
 import 'package:flutterbase/application/usecases/history/delete_code_history_item_usecase.dart';
 import 'package:flutterbase/application/usecases/history/get_code_history_usecase.dart';
 import 'package:flutterbase/application/usecases/history/record_code_use_usecase.dart';
+import 'package:flutterbase/application/usecases/history/set_code_note_usecase.dart';
 import 'package:flutterbase/infrastructure/repositories/shared_preferences_code_history_repository.dart';
 import 'package:flutterbase/presentation/viewmodels/code_history_viewmodel.dart';
 import 'package:flutterbase/presentation/widgets/code_history_section.dart';
@@ -23,6 +24,7 @@ void main() {
     viewModel = CodeHistoryViewModel(
       getHistory: GetCodeHistoryUseCase(repo),
       recordUse: RecordCodeUseUseCase(repo),
+      setNote: SetCodeNoteUseCase(repo),
       deleteItem: DeleteCodeHistoryItemUseCase(repo),
       clearHistory: ClearCodeHistoryUseCase(repo),
     );
@@ -105,6 +107,33 @@ void main() {
 
     expect(find.text('swipe'), findsNothing);
     expect(find.text('empty'), findsOneWidget);
+  });
+
+  testWidgets('a note can be added, kept on cancel, and removed',
+      (tester) async {
+    await tester.runAsync(() => viewModel.recordUse('code'));
+    await pumpSection(tester);
+
+    Future<void> editNote(String tooltip, String text, String button) async {
+      await tester.tap(find.byTooltip(tooltip));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), text);
+      await tester.tap(find.text(button));
+      await tester.pumpAndSettle();
+      await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+      await tester.pumpAndSettle();
+    }
+
+    await editNote(AppStrings.noteAdd, 'office wifi', AppStrings.noteSave);
+    expect(find.text('office wifi'), findsOneWidget);
+    expect(selected, isEmpty);
+
+    await editNote(AppStrings.noteEdit, 'changed', AppStrings.noteCancel);
+    expect(find.text('office wifi'), findsOneWidget);
+
+    await editNote(AppStrings.noteEdit, '', AppStrings.noteSave);
+    expect(find.text('office wifi'), findsNothing);
+    expect(find.byTooltip(AppStrings.noteAdd), findsOneWidget);
   });
 
   testWidgets('clear-all asks first, then empties the list', (tester) async {

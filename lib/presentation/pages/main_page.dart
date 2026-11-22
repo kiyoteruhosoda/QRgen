@@ -135,6 +135,10 @@ class _MainPageState extends State<MainPage> {
             );
           },
         ),
+        // The scanner has no input of its own and does not scroll. The only
+        // keyboard over it belongs to the note dialog, which moves itself, so
+        // squeezing the page underneath would just make it overflow.
+        resizeToAvoidBottomInset: _selectedIndex != 0,
         body: _buildTabContent(),
         bottomNavigationBar: NavigationBar(
           selectedIndex: _selectedIndex,

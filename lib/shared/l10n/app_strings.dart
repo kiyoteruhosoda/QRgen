@@ -62,10 +62,18 @@ class AppStrings {
   static const String historyClearAll = 'Clear All';
   static const String historyClearTitle = 'Clear History';
   static const String historyClearMessage =
-      'Delete all entries in this history?';
+      'Delete all entries and notes in this history?';
   static const String historyClearConfirm = 'Clear';
   static const String historyCancel = 'Cancel';
   static const String historyDeleted = 'Deleted from history';
+
+  // ─── Notes on history entries ─────────────────────────────────────────
+  static const String noteAdd = 'Add note';
+  static const String noteEdit = 'Edit note';
+  static const String noteLabel = 'Note';
+  static const String noteHelper = 'Not included in the QR code';
+  static const String noteSave = 'Save';
+  static const String noteCancel = 'Cancel';
 
   // ─── Settings tab ─────────────────────────────────────────────────────
   static const String settingsTitle = 'Settings';

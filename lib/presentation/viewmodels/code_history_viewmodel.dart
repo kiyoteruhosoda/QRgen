@@ -3,6 +3,7 @@ import 'package:flutterbase/application/usecases/history/clear_code_history_usec
 import 'package:flutterbase/application/usecases/history/delete_code_history_item_usecase.dart';
 import 'package:flutterbase/application/usecases/history/get_code_history_usecase.dart';
 import 'package:flutterbase/application/usecases/history/record_code_use_usecase.dart';
+import 'package:flutterbase/application/usecases/history/set_code_note_usecase.dart';
 import 'package:flutterbase/domain/entities/code_history_item.dart';
 
 /// History list of one tab (scanner or generator).
@@ -10,15 +11,18 @@ class CodeHistoryViewModel extends ChangeNotifier {
   CodeHistoryViewModel({
     required GetCodeHistoryUseCase getHistory,
     required RecordCodeUseUseCase recordUse,
+    required SetCodeNoteUseCase setNote,
     required DeleteCodeHistoryItemUseCase deleteItem,
     required ClearCodeHistoryUseCase clearHistory,
   })  : _getHistory = getHistory,
         _recordUse = recordUse,
+        _setNote = setNote,
         _deleteItem = deleteItem,
         _clearHistory = clearHistory;
 
   final GetCodeHistoryUseCase _getHistory;
   final RecordCodeUseUseCase _recordUse;
+  final SetCodeNoteUseCase _setNote;
   final DeleteCodeHistoryItemUseCase _deleteItem;
   final ClearCodeHistoryUseCase _clearHistory;
 
@@ -33,6 +37,12 @@ class CodeHistoryViewModel extends ChangeNotifier {
   /// Records [code] as just used, moving it to the top of the list.
   Future<void> recordUse(String code) async {
     await _recordUse.execute(code);
+    await load();
+  }
+
+  /// Saves [note] for [code]. A blank note removes it.
+  Future<void> setNote(String code, String note) async {
+    await _setNote.execute(code, note);
     await load();
   }
 
